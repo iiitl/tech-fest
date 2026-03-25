@@ -1,8 +1,9 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EventCard from "./EventCard";
 import EventModal from "./EventModal";
 import { week1, week2 } from "@/lib/data";
+import { getEvents, saveEvent } from "@/app/actions/events";
 import styles from "./WeekGrid.module.css";
 
 export default function WeekGrid({ activeFilter, activeCats }) {
@@ -22,10 +23,37 @@ export default function WeekGrid({ activeFilter, activeCats }) {
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  useEffect(() => {
+    async function loadMongoData() {
+      try {
+        const eventsFromDb = await getEvents();
+        const dbEventsMap = {};
+        eventsFromDb.forEach(e => {
+          dbEventsMap[e.eventId] = e;
+        });
+
+        if (eventsFromDb.length > 0) {
+          setWeeksData(prev => prev.map(week => week.map(day => ({
+            ...day,
+            events: day.events.map(ev => ({
+              ...ev,
+              description: dbEventsMap[ev.id]?.description || ev.description,
+              comments: dbEventsMap[ev.id]?.comments || ev.comments
+            }))
+          }))));
+        }
+      } catch (err) {
+        console.error("Failed to load events:", err);
+      }
+    }
+    loadMongoData();
+  }, []);
+
   const data = weeksData[currentWeek];
   const labels = ["Apr 6 – Apr 12", "Apr 13 – Apr 18"];
 
-  function handleSaveEvent(updatedEvent) {
+  async function handleSaveEvent(updatedEvent) {
+    // Optimistic UI update
     setWeeksData(prev => 
       prev.map(week => 
         week.map(day => ({
@@ -37,6 +65,15 @@ export default function WeekGrid({ activeFilter, activeCats }) {
       )
     );
     setSelectedEvent(updatedEvent);
+
+    try {
+      await saveEvent(updatedEvent.id, {
+        description: updatedEvent.description,
+        comments: updatedEvent.comments
+      });
+    } catch (err) {
+      console.error("Failed to save event:", err);
+    }
   }
 
   function filterEvents(events) {
