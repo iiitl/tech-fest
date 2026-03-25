@@ -25,7 +25,7 @@ export default function EventModal({ event, onClose, onSave }) {
     if (!newComment.trim() || !isLoggedIn) return;
     const comment = {
       id: Date.now().toString(),
-      author: user.email.split('@')[0],
+      author: user.displayName || user.email,
       role: role,
       text: newComment,
       time: new Date().toLocaleDateString(),
@@ -39,7 +39,7 @@ export default function EventModal({ event, onClose, onSave }) {
     if (!replyText[commentId]?.trim() || !isAuthorized) return;
     const reply = {
       id: Date.now().toString(),
-      author: user.email.split('@')[0],
+      author: user.displayName || user.email,
       role: role,
       text: replyText[commentId],
       time: new Date().toLocaleDateString()
