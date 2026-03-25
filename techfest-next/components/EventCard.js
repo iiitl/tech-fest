@@ -1,10 +1,10 @@
 import { CAT_CLASS, CAT_COLOR } from "@/lib/data";
 import styles from "./EventCard.module.css";
 
-export default function EventCard({ event }) {
+export default function EventCard({ event, onClick }) {
   const { name, time, cat, mode } = event;
   return (
-    <div className={`${styles.card} ${styles[CAT_CLASS[cat] || ""]}`}>
+    <div className={`${styles.card} ${styles[CAT_CLASS[cat] || ""]}`} onClick={onClick}>
       <div className={styles.name}>{name}</div>
       <div className={styles.time}>{time}</div>
       <div className={styles.footer}>

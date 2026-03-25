@@ -28,7 +28,9 @@ if (hasConfig) {
 
 export { auth };
 
-const ROLES = {};
+const ROLES = {
+  "lcs2024016@iiiitl.ac.in": "admin",
+};
 
 export function getRole(email) {
   return ROLES[email] || "student";

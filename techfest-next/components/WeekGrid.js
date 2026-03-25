@@ -1,14 +1,43 @@
 "use client";
 import { useState } from "react";
 import EventCard from "./EventCard";
+import EventModal from "./EventModal";
 import { week1, week2 } from "@/lib/data";
 import styles from "./WeekGrid.module.css";
 
 export default function WeekGrid({ activeFilter, activeCats }) {
   const [currentWeek, setCurrentWeek] = useState(0);
-  const weeks = [week1, week2];
-  const data = weeks[currentWeek];
+  const [weeksData, setWeeksData] = useState(() => {
+    return [week1, week2].map((week, wIdx) => 
+      week.map((day, dIdx) => ({
+        ...day,
+        events: day.events.map((ev, eIdx) => ({
+          ...ev,
+          id: `${wIdx}-${dIdx}-${eIdx}`,
+          description: ev.description || "Join us and participate! No detailed description provided yet.",
+          comments: ev.comments || []
+        }))
+      }))
+    );
+  });
+  const [selectedEvent, setSelectedEvent] = useState(null);
+
+  const data = weeksData[currentWeek];
   const labels = ["Apr 6 – Apr 12", "Apr 13 – Apr 18"];
+
+  function handleSaveEvent(updatedEvent) {
+    setWeeksData(prev => 
+      prev.map(week => 
+        week.map(day => ({
+          ...day,
+          events: day.events.map(ev => 
+            ev.id === updatedEvent.id ? updatedEvent : ev
+          )
+        }))
+      )
+    );
+    setSelectedEvent(updatedEvent);
+  }
 
   function filterEvents(events) {
     let result = events;
@@ -44,13 +73,22 @@ export default function WeekGrid({ activeFilter, activeCats }) {
                 {dayData.badge && <div className={styles.badge}>{dayData.badge}</div>}
               </div>
               <div className={styles.dayEvents}>
-                {filtered.map((ev, i) => <EventCard key={i} event={ev} />)}
+                {filtered.map((ev, i) => (
+                  <EventCard key={ev.id || i} event={ev} onClick={() => setSelectedEvent(ev)} />
+                ))}
                 <button className={styles.addBtn}>+ add</button>
               </div>
             </div>
           );
         })}
       </div>
+      {selectedEvent && (
+        <EventModal 
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onSave={handleSaveEvent}
+        />
+      )}
     </>
   );
 }
