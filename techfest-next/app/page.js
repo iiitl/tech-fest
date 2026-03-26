@@ -5,11 +5,13 @@ import AuthGate from "@/components/AuthGate";
 import Header from "@/components/Header";
 import Timeline from "@/components/Timeline";
 import WeekGrid from "@/components/WeekGrid";
+import BoardView from "@/components/BoardView";
 
 export default function Home() {
   const { user, loading } = useAuth();
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeCats, setActiveCats] = useState(new Set());
+  const [activeView, setActiveView] = useState("Split");
 
   function toggleCat(cat) {
     setActiveCats(prev => {
@@ -28,9 +30,19 @@ export default function Home() {
         onFilterChange={setActiveFilter}
         onCatToggle={toggleCat}
         activeCats={activeCats}
+        activeView={activeView}
+        onViewChange={setActiveView}
       />
-      <Timeline />
-      <WeekGrid activeFilter={activeFilter} activeCats={activeCats} />
+      {activeView === "Split" && (
+        <>
+          <Timeline />
+          <WeekGrid activeFilter={activeFilter} activeCats={activeCats} />
+        </>
+      )}
+      {activeView === "Timeline" && <Timeline />}
+      {activeView === "Board" && (
+        <BoardView activeFilter={activeFilter} activeCats={activeCats} />
+      )}
     </>
   );
 }
