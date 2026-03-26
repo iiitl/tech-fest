@@ -13,8 +13,9 @@ export default function WeekGrid({ activeFilter, activeCats }) {
   const isAuthorized = role === "admin" || role === "organizer";
 
   const [currentWeek, setCurrentWeek] = useState(0);
+  const [activeDay, setActiveDay] = useState(0); // mobile: which day is shown
   const [weeksData, setWeeksData] = useState(() => {
-    return [week1, week2].map((week, wIdx) => 
+    return [week1, week2].map((week, wIdx) =>
       week.map((day, dIdx) => ({
         ...day,
         events: day.events.map((ev, eIdx) => ({
@@ -27,17 +28,14 @@ export default function WeekGrid({ activeFilter, activeCats }) {
     );
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [addTarget, setAddTarget] = useState(null); // { weekIdx, dayIdx, date }
+  const [addTarget, setAddTarget] = useState(null);
 
   useEffect(() => {
     async function loadMongoData() {
       try {
         const eventsFromDb = await getEvents();
         const dbEventsMap = {};
-        eventsFromDb.forEach(e => {
-          dbEventsMap[e.eventId] = e;
-        });
-
+        eventsFromDb.forEach(e => { dbEventsMap[e.eventId] = e; });
         if (eventsFromDb.length > 0) {
           setWeeksData(prev => prev.map(week => week.map(day => ({
             ...day,
@@ -58,20 +56,21 @@ export default function WeekGrid({ activeFilter, activeCats }) {
   const data = weeksData[currentWeek];
   const labels = ["Apr 6 – Apr 12", "Apr 13 – Apr 18"];
 
+  function handleWeekChange(idx) {
+    setCurrentWeek(idx);
+    setActiveDay(0);
+  }
+
   async function handleSaveEvent(updatedEvent) {
-    // Optimistic UI update
-    setWeeksData(prev => 
-      prev.map(week => 
+    setWeeksData(prev =>
+      prev.map(week =>
         week.map(day => ({
           ...day,
-          events: day.events.map(ev => 
-            ev.id === updatedEvent.id ? updatedEvent : ev
-          )
+          events: day.events.map(ev => ev.id === updatedEvent.id ? updatedEvent : ev)
         }))
       )
     );
     setSelectedEvent(updatedEvent);
-
     try {
       await saveEvent(updatedEvent.id, {
         description: updatedEvent.description,
@@ -95,36 +94,29 @@ export default function WeekGrid({ activeFilter, activeCats }) {
       description: form.description || "No description provided.",
       comments: [],
     };
-
-    setWeeksData(prev => {
-      const next = prev.map((week, wi) =>
-        week.map((day, di) => {
-          if (wi === weekIdx && di === dayIdx) {
-            return { ...day, events: [...day.events, newEvent] };
-          }
-          return day;
-        })
-      );
-      return next;
-    });
-
+    setWeeksData(prev =>
+      prev.map((week, wi) =>
+        week.map((day, di) =>
+          wi === weekIdx && di === dayIdx
+            ? { ...day, events: [...day.events, newEvent] }
+            : day
+        )
+      )
+    );
     setAddTarget(null);
-
     try {
       await createEvent(newEvent.id, {
-        name: newEvent.name,
-        time: newEvent.time,
-        cat: newEvent.cat,
-        mode: newEvent.mode,
-        description: newEvent.description,
-        comments: [],
+        name: newEvent.name, time: newEvent.time,
+        cat: newEvent.cat, mode: newEvent.mode,
+        description: newEvent.description, comments: [],
       });
     } catch (err) {
       console.error("Failed to persist new event:", err);
     }
   }
 
-  function filterEvents(events) {    let result = events;
+  function filterEvents(events) {
+    let result = events;
     if (activeFilter === "online") result = result.filter(e => e.mode === "online");
     else if (activeFilter === "offline") result = result.filter(e => e.mode === "offline");
     if (activeCats.size > 0) result = result.filter(e => activeCats.has(e.cat));
@@ -133,18 +125,25 @@ export default function WeekGrid({ activeFilter, activeCats }) {
 
   return (
     <>
+      {/* Week navigation */}
       <div className={styles.weekNav}>
-        <button
-          className={styles.navBtn}
-          onClick={() => setCurrentWeek(0)}
-          disabled={currentWeek === 0}
-        >← Prev</button>
+        <button className={styles.navBtn} onClick={() => handleWeekChange(0)} disabled={currentWeek === 0}>← Prev</button>
         <span className={styles.weekLabel}>{labels[currentWeek]}</span>
-        <button
-          className={styles.navBtn}
-          onClick={() => setCurrentWeek(1)}
-          disabled={currentWeek === 1}
-        >Next →</button>
+        <button className={styles.navBtn} onClick={() => handleWeekChange(1)} disabled={currentWeek === 1}>Next →</button>
+      </div>
+
+      {/* Mobile day picker */}
+      <div className={styles.dayPicker}>
+        {data.map((dayData, i) => (
+          <button
+            key={dayData.date}
+            className={`${styles.dayTab} ${activeDay === i ? styles.dayTabActive : ""}`}
+            onClick={() => setActiveDay(i)}
+          >
+            <span className={styles.dayTabDay}>{dayData.day}</span>
+            <span className={styles.dayTabDate}>{dayData.date.replace("Apr ", "")}</span>
+          </button>
+        ))}
       </div>
 
       <div className={styles.gridWrapper}>
@@ -152,12 +151,18 @@ export default function WeekGrid({ activeFilter, activeCats }) {
           {data.map((dayData, dayIdx) => {
             const filtered = filterEvents(dayData.events);
             return (
-              <div key={dayData.date} className={styles.dayCol}>
+              <div
+                key={dayData.date}
+                className={`${styles.dayCol} ${activeDay === dayIdx ? styles.active : ""}`}
+              >
                 <div className={styles.dayHeader}>
                   <h3><span>{dayData.day} · </span>{dayData.date}</h3>
                   {dayData.badge && <div className={styles.badge}>{dayData.badge}</div>}
                 </div>
                 <div className={styles.dayEvents}>
+                  {filtered.length === 0 && (
+                    <p className={styles.noEvents}>No events</p>
+                  )}
                   {filtered.map((ev, i) => (
                     <EventCard key={ev.id || i} event={ev} onClick={() => setSelectedEvent(ev)} />
                   ))}
@@ -165,9 +170,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
                     <button
                       className={styles.addBtn}
                       onClick={() => setAddTarget({ weekIdx: currentWeek, dayIdx, date: `${dayData.day}, ${dayData.date}` })}
-                    >
-                      + add
-                    </button>
+                    >+ add</button>
                   )}
                 </div>
               </div>
@@ -175,19 +178,12 @@ export default function WeekGrid({ activeFilter, activeCats }) {
           })}
         </div>
       </div>
+
       {selectedEvent && (
-        <EventModal
-          event={selectedEvent}
-          onClose={() => setSelectedEvent(null)}
-          onSave={handleSaveEvent}
-        />
+        <EventModal event={selectedEvent} onClose={() => setSelectedEvent(null)} onSave={handleSaveEvent} />
       )}
       {addTarget && (
-        <AddEventModal
-          dayDate={addTarget.date}
-          onClose={() => setAddTarget(null)}
-          onAdd={handleAddEvent}
-        />
+        <AddEventModal dayDate={addTarget.date} onClose={() => setAddTarget(null)} onAdd={handleAddEvent} />
       )}
     </>
   );

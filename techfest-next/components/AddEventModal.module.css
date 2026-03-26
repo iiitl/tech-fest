@@ -160,3 +160,20 @@
   from { opacity: 0; transform: translateY(16px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+@media (max-width: 600px) {
+  .overlay { align-items: flex-end; padding: 0; }
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 20px 20px 0 0;
+    border-bottom: none;
+    animation: sheetUp 0.3s ease-out;
+  }
+  .row { grid-template-columns: 1fr; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); opacity: 1; }
+  to   { transform: translateY(0);    opacity: 1; }
+}

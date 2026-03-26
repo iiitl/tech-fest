@@ -18,7 +18,6 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .navBtn:hover:not(:disabled) { background: #f97316; color: #fff; border-color: #f97316; }
 .navBtn:disabled { opacity: 0.35; cursor: default; }
 
@@ -30,22 +29,27 @@
   text-align: center;
 }
 
+/* Day picker — mobile only, hidden on desktop */
+.dayPicker {
+  display: none;
+}
+
+/* Desktop grid */
 .gridWrapper {
   padding: 0 32px 32px;
   overflow-x: auto;
-  /* subtle scrollbar */
   scrollbar-width: thin;
   scrollbar-color: #2a2d3a transparent;
 }
-
 .gridWrapper::-webkit-scrollbar { height: 6px; }
 .gridWrapper::-webkit-scrollbar-track { background: transparent; }
 .gridWrapper::-webkit-scrollbar-thumb { background: #2a2d3a; border-radius: 3px; }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, minmax(160px, 1fr));
-  min-width: 1120px;
+  /* columns shrink to fit the window, min 120px each */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  width: 100%;
 }
 
 .dayCol {
@@ -54,26 +58,16 @@
   min-height: 340px;
   background: #12141c;
 }
-
-.dayCol:last-child { border-right: 1px solid #1e2130; border-radius: 0 12px 12px 0; }
 .dayCol:first-child { border-radius: 12px 0 0 12px; }
+.dayCol:last-child  { border-right: 1px solid #1e2130; border-radius: 0 12px 12px 0; }
 
 .dayHeader {
   padding: 12px 14px 10px;
   border-bottom: 1px solid #1e2130;
   background: #1a1d27;
 }
-
-.dayHeader h3 {
-  font-size: 13px;
-  font-weight: 700;
-  color: #e8e4de;
-}
-
-.dayHeader h3 span {
-  font-weight: 400;
-  color: #4b5563;
-}
+.dayHeader h3 { font-size: 13px; font-weight: 700; color: #e8e4de; }
+.dayHeader h3 span { font-weight: 400; color: #4b5563; }
 
 .badge {
   font-size: 10px;
@@ -91,6 +85,14 @@
   gap: 6px;
 }
 
+.noEvents {
+  font-size: 12px;
+  color: #2a2d3a;
+  text-align: center;
+  padding: 16px 0 8px;
+  font-style: italic;
+}
+
 .addBtn {
   display: flex;
   align-items: center;
@@ -106,9 +108,77 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-
 .addBtn:hover { border-color: #f97316; color: #f97316; }
 
+/* ── Mobile ── */
 @media (max-width: 700px) {
-  .gridWrapper { padding: 0 16px 24px; }
+  .weekNav { padding: 8px 16px; }
+
+  /* show the day tab picker */
+  .dayPicker {
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+    gap: 6px;
+    padding: 8px 16px;
+    border-bottom: 1px solid #1e2130;
+  }
+  .dayPicker::-webkit-scrollbar { display: none; }
+
+  .dayTab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1.5px solid #2a2d3a;
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .dayTabActive {
+    background: #f97316;
+    border-color: #f97316;
+  }
+  .dayTabDay {
+    font-size: 10px;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .dayTabActive .dayTabDay { color: #fff; }
+  .dayTabDate {
+    font-size: 13px;
+    font-weight: 700;
+    color: #e8e4de;
+  }
+  .dayTabActive .dayTabDate { color: #fff; }
+
+  /* grid becomes a single visible column */
+  .gridWrapper {
+    padding: 12px 16px 24px;
+    overflow-x: visible;
+  }
+  .grid {
+    display: block;
+    min-width: unset;
+  }
+
+  /* hide all columns, show only active */
+  .dayCol {
+    display: none;
+    border: 1px solid #1e2130;
+    border-right: 1px solid #1e2130;
+    border-radius: 12px;
+    min-height: unset;
+  }
+  .dayCol.active { display: block; }
+
+  .dayHeader {
+    border-radius: 12px 12px 0 0;
+  }
+  .dayEvents { padding: 10px; gap: 8px; }
 }
