@@ -1,20 +1,21 @@
 "use server";
 
 import clientPromise from "@/lib/mongodb";
+import { getRole as getStaticRole } from "@/lib/firebase";
 
-const ADMIN_SEED = process.env.ADMIN_EMAIL || "";
-
+// DB is source of truth. Static ROLES map is fallback only.
 export async function getRoleFromDb(email) {
   if (!email) return "student";
-  if (ADMIN_SEED && email === ADMIN_SEED) return "admin";
   try {
     const client = await clientPromise;
-    if (!client) return "student";
+    if (!client) return getStaticRole(email);
     const db = client.db();
     const doc = await db.collection("roles").findOne({ email });
-    return doc?.role || "student";
+    if (doc?.role) return doc.role;
+    // fall back to hardcoded map
+    return getStaticRole(email);
   } catch {
-    return "student";
+    return getStaticRole(email);
   }
 }
 

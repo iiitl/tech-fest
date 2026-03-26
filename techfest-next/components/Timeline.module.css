@@ -9,7 +9,6 @@
   font-size: 12px;
   font-weight: 600;
 }
-
 .legend span { display: flex; align-items: center; gap: 4px; }
 
 .line {
@@ -27,13 +26,9 @@
   padding: 0 0 6px;
   border-bottom: 1px solid #2a2d3a;
 }
-
 .today { color: #f97316; font-weight: 600; }
 
-.bars {
-  position: relative;
-  padding: 6px 0;
-}
+.bars { position: relative; padding: 6px 0; }
 
 .row {
   display: flex;
@@ -62,6 +57,68 @@
   opacity: 0.7;
 }
 
+/* mobile list — hidden on desktop */
+.mobileList { display: none; }
+
+/* ── Mobile ── */
 @media (max-width: 700px) {
   .section { display: none; }
+
+  .mobileList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 16px 24px;
+  }
+
+  .dayGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .dayLabel {
+    font-size: 11px;
+    font-weight: 700;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #1e2130;
+  }
+
+  .eventRow {
+    background: #12141c;
+    border: 1px solid #1e2130;
+    border-left: 3px solid;
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .eventName {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e2ddd8;
+    margin-bottom: 4px;
+  }
+
+  .eventMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #6b7280;
+  }
+
+  .dot { color: #2a2d3a; }
+
+  .modeBadge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 8px;
+  }
+  .online  { color: #34d399; background: rgba(52,211,153,0.12); }
+  .offline { color: #f87171; background: rgba(248,113,113,0.12); }
 }

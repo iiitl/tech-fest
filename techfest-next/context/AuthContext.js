@@ -2,9 +2,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, signInWithGoogle, signOut } from "@/lib/firebase";
-import { getRoleFromDb } from "@/app/actions/roles";
 
 const AuthContext = createContext(null);
+
+async function fetchRole(email) {
+  try {
+    const res = await fetch(`/api/role?email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    return data.role || "student";
+  } catch {
+    return "student";
+  }
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser]       = useState(null);
@@ -17,7 +26,7 @@ export function AuthProvider({ children }) {
     const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u || null);
       if (u) {
-        const r = await getRoleFromDb(u.email);
+        const r = await fetchRole(u.email);
         setRole(r);
       } else {
         setRole(null);
@@ -31,7 +40,7 @@ export function AuthProvider({ children }) {
     setError("");
     try {
       const { user: u } = await signInWithGoogle();
-      const r = await getRoleFromDb(u.email);
+      const r = await fetchRole(u.email);
       setUser(u);
       setRole(r);
     } catch (e) {
@@ -45,8 +54,14 @@ export function AuthProvider({ children }) {
     setRole(null);
   }
 
+  async function refreshRole() {
+    if (!user) return;
+    const r = await fetchRole(user.email);
+    setRole(r);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, role, loading, login, logout, error }}>
+    <AuthContext.Provider value={{ user, role, loading, login, logout, refreshRole, error }}>
       {children}
     </AuthContext.Provider>
   );

@@ -85,6 +85,16 @@
 }
 
 @media (max-width: 700px) {
-  .board { padding: 12px 16px 24px; gap: 12px; }
-  .column { min-width: 75vw; max-width: 80vw; }
+  /* Board stacks vertically, no horizontal scroll */
+  .board {
+    flex-direction: column;
+    overflow-x: hidden;
+    padding: 12px 16px 24px;
+    gap: 12px;
+  }
+  .column {
+    min-width: unset;
+    max-width: unset;
+    width: 100%;
+  }
 }
