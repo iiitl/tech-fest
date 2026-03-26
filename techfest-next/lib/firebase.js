@@ -32,7 +32,7 @@ const ROLES = {
   "lcs2024036@iiiitl.ac.in": "admin",
 };
 
-const ALLOW_ALL_EDIT = false; // Set to true to give admin access to all logged-in users
+const ALLOW_ALL_EDIT = false; 
 
 export function getRole(email) {
   if (ALLOW_ALL_EDIT) return "admin";
