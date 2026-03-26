@@ -40,11 +40,13 @@ export default function Header({ onFilterChange, onCatToggle, activeCats, active
                 }
                 <span className={styles.userName}>{user.displayName || user.email.split("@")[0]}</span>
                 <span className={styles.roleBadge}>{role}</span>
-                {role === "admin" && (
-                  <button className={styles.manageBtn} onClick={() => setShowRoleManager(true)} title="Manage roles">⚙</button>
-                )}
                 <button className={styles.signOutBtn} onClick={logout} title="Sign out">×</button>
               </div>
+            )}
+            {role === "admin" && (
+              <button className={styles.manageRolesBtn} onClick={() => setShowRoleManager(true)}>
+                Manage Roles
+              </button>
             )}
           </div>
         </div>

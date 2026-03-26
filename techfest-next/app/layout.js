@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/context/AuthContext";
+import HydrationFix from "@/components/HydrationFix";
 import "./globals.css";
 
 export const metadata = {
@@ -7,7 +8,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body suppressHydrationWarning={true}>
+        <HydrationFix />
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
