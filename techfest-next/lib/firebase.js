@@ -29,10 +29,10 @@ if (hasConfig) {
 export { auth };
 
 const ROLES = {
-  "lcs2024016@iiiitl.ac.in": "admin",
+  "lcs2024036@iiiitl.ac.in": "admin",
 };
 
-const ALLOW_ALL_EDIT = true; // Set to true to give admin access to all logged-in users
+const ALLOW_ALL_EDIT = false; // Set to true to give admin access to all logged-in users
 
 export function getRole(email) {
   if (ALLOW_ALL_EDIT) return "admin";
