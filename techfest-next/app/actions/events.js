@@ -28,7 +28,16 @@ export async function saveEvent(eventId, eventData) {
     const db = client.db();
     await db.collection("events").updateOne(
       { eventId: eventId },
-      { $set: { description: eventData.description, comments: eventData.comments } },
+      { $set: { 
+          description: eventData.description, 
+          comments: eventData.comments,
+          ...(eventData.name    !== undefined && { name: eventData.name }),
+          ...(eventData.time    !== undefined && { time: eventData.time }),
+          ...(eventData.cat     !== undefined && { cat: eventData.cat }),
+          ...(eventData.mode    !== undefined && { mode: eventData.mode }),
+          ...(eventData.poc     !== undefined && { poc: eventData.poc }),
+        } 
+      },
       { upsert: true }
     );
     

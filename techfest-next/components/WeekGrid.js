@@ -75,7 +75,12 @@ export default function WeekGrid({ activeFilter, activeCats }) {
     try {
       await saveEvent(updatedEvent.id, {
         description: updatedEvent.description,
-        comments: updatedEvent.comments
+        comments: updatedEvent.comments,
+        name: updatedEvent.name,
+        time: updatedEvent.time,
+        cat:  updatedEvent.cat,
+        mode: updatedEvent.mode,
+        poc:  updatedEvent.poc,
       });
     } catch (err) {
       console.error("Failed to save event:", err);
