@@ -1,12 +1,17 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthContext";
 import EventCard from "./EventCard";
 import EventModal from "./EventModal";
-import { week1, week2 } from "@/lib/data";
-import { getEvents, saveEvent } from "@/app/actions/events";
+import AddEventModal from "./AddEventModal";
+import { week1, week2, CAT_CLASS } from "@/lib/data";
+import { getEvents, saveEvent, createEvent } from "@/app/actions/events";
 import styles from "./WeekGrid.module.css";
 
 export default function WeekGrid({ activeFilter, activeCats }) {
+  const { role } = useAuth();
+  const isAuthorized = role === "admin" || role === "organizer";
+
   const [currentWeek, setCurrentWeek] = useState(0);
   const [weeksData, setWeeksData] = useState(() => {
     return [week1, week2].map((week, wIdx) => 
@@ -22,6 +27,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
     );
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [addTarget, setAddTarget] = useState(null); // { weekIdx, dayIdx, date }
 
   useEffect(() => {
     async function loadMongoData() {
@@ -76,8 +82,44 @@ export default function WeekGrid({ activeFilter, activeCats }) {
     }
   }
 
-  function filterEvents(events) {
-    let result = events;
+  async function handleAddEvent(form) {
+    const { weekIdx, dayIdx } = addTarget;
+    const newEvent = {
+      ...form,
+      id: `custom-${Date.now()}`,
+      description: form.description || "No description provided.",
+      comments: [],
+    };
+
+    setWeeksData(prev => {
+      const next = prev.map((week, wi) =>
+        week.map((day, di) => {
+          if (wi === weekIdx && di === dayIdx) {
+            return { ...day, events: [...day.events, newEvent] };
+          }
+          return day;
+        })
+      );
+      return next;
+    });
+
+    setAddTarget(null);
+
+    try {
+      await createEvent(newEvent.id, {
+        name: newEvent.name,
+        time: newEvent.time,
+        cat: newEvent.cat,
+        mode: newEvent.mode,
+        description: newEvent.description,
+        comments: [],
+      });
+    } catch (err) {
+      console.error("Failed to persist new event:", err);
+    }
+  }
+
+  function filterEvents(events) {    let result = events;
     if (activeFilter === "online") result = result.filter(e => e.mode === "online");
     else if (activeFilter === "offline") result = result.filter(e => e.mode === "offline");
     if (activeCats.size > 0) result = result.filter(e => activeCats.has(e.cat));
@@ -100,30 +142,46 @@ export default function WeekGrid({ activeFilter, activeCats }) {
         >Next →</button>
       </div>
 
-      <div className={styles.grid}>
-        {data.map((dayData) => {
-          const filtered = filterEvents(dayData.events);
-          return (
-            <div key={dayData.date} className={styles.dayCol}>
-              <div className={styles.dayHeader}>
-                <h3><span>{dayData.day} · </span>{dayData.date}</h3>
-                {dayData.badge && <div className={styles.badge}>{dayData.badge}</div>}
+      <div className={styles.gridWrapper}>
+        <div className={styles.grid}>
+          {data.map((dayData, dayIdx) => {
+            const filtered = filterEvents(dayData.events);
+            return (
+              <div key={dayData.date} className={styles.dayCol}>
+                <div className={styles.dayHeader}>
+                  <h3><span>{dayData.day} · </span>{dayData.date}</h3>
+                  {dayData.badge && <div className={styles.badge}>{dayData.badge}</div>}
+                </div>
+                <div className={styles.dayEvents}>
+                  {filtered.map((ev, i) => (
+                    <EventCard key={ev.id || i} event={ev} onClick={() => setSelectedEvent(ev)} />
+                  ))}
+                  {isAuthorized && (
+                    <button
+                      className={styles.addBtn}
+                      onClick={() => setAddTarget({ weekIdx: currentWeek, dayIdx, date: `${dayData.day}, ${dayData.date}` })}
+                    >
+                      + add
+                    </button>
+                  )}
+                </div>
               </div>
-              <div className={styles.dayEvents}>
-                {filtered.map((ev, i) => (
-                  <EventCard key={ev.id || i} event={ev} onClick={() => setSelectedEvent(ev)} />
-                ))}
-                <button className={styles.addBtn}>+ add</button>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
       {selectedEvent && (
-        <EventModal 
+        <EventModal
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
           onSave={handleSaveEvent}
+        />
+      )}
+      {addTarget && (
+        <AddEventModal
+          dayDate={addTarget.date}
+          onClose={() => setAddTarget(null)}
+          onAdd={handleAddEvent}
         />
       )}
     </>

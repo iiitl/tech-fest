@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { CATEGORIES, CAT_COLOR } from "@/lib/data";
 import styles from "./Header.module.css";
 
-export default function Header({ onFilterChange, onCatToggle, activeCats }) {
+export default function Header({ onFilterChange, onCatToggle, activeCats, activeView, onViewChange }) {
   const { user, role, logout } = useAuth();
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -49,8 +49,12 @@ export default function Header({ onFilterChange, onCatToggle, activeCats }) {
       <div className={styles.right}>
         <span className={styles.eventCount}>31 events</span>
         <div className={styles.viewToggle}>
-          {["Split", "Timeline", "Board"].map((v, i) => (
-            <button key={v} className={`${styles.viewBtn} ${i === 0 ? styles.active : ""}`}>{v}</button>
+          {["Split", "Timeline", "Board"].map((v) => (
+            <button
+              key={v}
+              className={`${styles.viewBtn} ${activeView === v ? styles.active : ""}`}
+              onClick={() => onViewChange(v)}
+            >{v}</button>
           ))}
         </div>
         {user ? (

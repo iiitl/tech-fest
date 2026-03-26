@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   gap: 12px;
-  padding: 12px 32px;
+  padding: 10px 32px;
 }
 
 .navBtn {
@@ -30,37 +30,49 @@
   text-align: center;
 }
 
+.gridWrapper {
+  padding: 0 32px 32px;
+  overflow-x: auto;
+  /* subtle scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: #2a2d3a transparent;
+}
+
+.gridWrapper::-webkit-scrollbar { height: 6px; }
+.gridWrapper::-webkit-scrollbar-track { background: transparent; }
+.gridWrapper::-webkit-scrollbar-thumb { background: #2a2d3a; border-radius: 3px; }
+
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  padding: 0 32px 32px;
+  grid-template-columns: repeat(7, minmax(160px, 1fr));
+  min-width: 1120px;
 }
 
 .dayCol {
-  border: 1px solid #2a2d3a;
+  border: 1px solid #1e2130;
   border-right: none;
-  min-height: 300px;
-  background: #1a1d27;
+  min-height: 340px;
+  background: #12141c;
 }
 
-.dayCol:last-child { border-right: 1px solid #2a2d3a; border-radius: 0 12px 12px 0; }
+.dayCol:last-child { border-right: 1px solid #1e2130; border-radius: 0 12px 12px 0; }
 .dayCol:first-child { border-radius: 12px 0 0 12px; }
 
 .dayHeader {
-  padding: 14px 14px 10px;
-  border-bottom: 1px solid #2a2d3a;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid #1e2130;
   background: #1a1d27;
 }
 
 .dayHeader h3 {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: #e8e4de;
 }
 
 .dayHeader h3 span {
   font-weight: 400;
-  color: #6b7280;
+  color: #4b5563;
 }
 
 .badge {
@@ -69,7 +81,7 @@
   color: #f97316;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin-top: 2px;
+  margin-top: 3px;
 }
 
 .dayEvents {
@@ -97,12 +109,6 @@
 
 .addBtn:hover { border-color: #f97316; color: #f97316; }
 
-@media (max-width: 1100px) {
-  .grid { grid-template-columns: repeat(4, 1fr); }
-  .dayCol:nth-child(4) { border-right: 1px solid #2a2d3a; border-radius: 0 12px 12px 0; }
-  .dayCol:nth-child(5) { border-radius: 12px 0 0 12px; margin-top: 8px; }
-}
-
 @media (max-width: 700px) {
-  .grid { grid-template-columns: 1fr 1fr; padding: 12px 16px; }
+  .gridWrapper { padding: 0 16px 24px; }
 }

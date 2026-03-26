@@ -7,7 +7,6 @@ export async function getEvents() {
     const client = await clientPromise;
     if (!client) return [];
     
-    // Default to the connected database
     const db = client.db();
     const events = await db.collection("events").find({}).toArray();
     
@@ -36,6 +35,25 @@ export async function saveEvent(eventId, eventData) {
     return { success: true };
   } catch (error) {
     console.error("Error saving event:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function createEvent(eventId, eventData) {
+  try {
+    const client = await clientPromise;
+    if (!client) throw new Error("Database not connected");
+
+    const db = client.db();
+    await db.collection("events").updateOne(
+      { eventId },
+      { $set: { eventId, ...eventData } },
+      { upsert: true }
+    );
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error creating event:", error);
     return { success: false, error: error.message };
   }
 }

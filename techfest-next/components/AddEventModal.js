@@ -1,0 +1,108 @@
+"use client";
+import { useState } from "react";
+import { CATEGORIES, CAT_COLOR } from "@/lib/data";
+import styles from "./AddEventModal.module.css";
+
+export default function AddEventModal({ dayDate, onClose, onAdd }) {
+  const [form, setForm] = useState({
+    name: "",
+    time: "",
+    cat: CATEGORIES[0],
+    mode: "offline",
+    description: "",
+  });
+  const [error, setError] = useState("");
+
+  function set(field, value) {
+    setForm(prev => ({ ...prev, [field]: value }));
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!form.name.trim()) return setError("Event name is required.");
+    if (!form.time.trim()) return setError("Time is required.");
+    setError("");
+    onAdd(form);
+  }
+
+  return (
+    <div className={styles.overlay} onClick={onClose}>
+      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        <div className={styles.header}>
+          <div>
+            <h2 className={styles.title}>Add Event</h2>
+            <p className={styles.sub}>{dayDate}</p>
+          </div>
+          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+        </div>
+
+        <form className={styles.body} onSubmit={handleSubmit}>
+          <label className={styles.label}>
+            Event Name
+            <input
+              className={styles.input}
+              placeholder="e.g. Hackathon Finals"
+              value={form.name}
+              onChange={e => set("name", e.target.value)}
+              autoFocus
+            />
+          </label>
+
+          <label className={styles.label}>
+            Time
+            <input
+              className={styles.input}
+              placeholder="e.g. 6:00 PM – 9:00 PM · 3 hrs"
+              value={form.time}
+              onChange={e => set("time", e.target.value)}
+            />
+          </label>
+
+          <div className={styles.row}>
+            <label className={styles.label}>
+              Category
+              <select
+                className={styles.input}
+                value={form.cat}
+                onChange={e => set("cat", e.target.value)}
+              >
+                {CATEGORIES.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </label>
+
+            <label className={styles.label}>
+              Mode
+              <select
+                className={styles.input}
+                value={form.mode}
+                onChange={e => set("mode", e.target.value)}
+              >
+                <option value="offline">Offline</option>
+                <option value="online">Online</option>
+              </select>
+            </label>
+          </div>
+
+          <label className={styles.label}>
+            Description <span className={styles.optional}>(optional)</span>
+            <textarea
+              className={styles.textarea}
+              placeholder="Brief description of the event..."
+              value={form.description}
+              onChange={e => set("description", e.target.value)}
+            />
+          </label>
+
+          {error && <p className={styles.error}>{error}</p>}
+
+          <div className={styles.actions}>
+            <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancel</button>
+            <button type="submit" className={styles.submitBtn}>Add Event</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
