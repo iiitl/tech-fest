@@ -29,7 +29,8 @@ if (hasConfig) {
 export { auth };
 
 const ROLES = {
-  "lcs2024036@iiiitl.ac.in": "admin",
+  "lcs2024016@iiitl.ac.in": "admin",
+  "lci2024010@iiitl.ac.in":"admin"
 };
 
 const ALLOW_ALL_EDIT = false; 
