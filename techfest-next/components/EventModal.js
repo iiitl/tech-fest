@@ -2,23 +2,47 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./EventModal.module.css";
-import { CAT_COLOR } from "@/lib/data";
+import { CAT_COLOR, CATEGORIES } from "@/lib/data";
 
 export default function EventModal({ event, onClose, onSave }) {
   const { user, role } = useAuth();
-  
-  const isAuthorized = role === "admin" || role === "organizer";
-  const isLoggedIn = !!user;
 
-  const [isEditing, setIsEditing] = useState(false);
+  const isAdmin     = role === "admin" || role === "organizer";
+  const isPoc       = !!user && !!event.poc && user.email === event.poc;
+  const canEdit     = isAdmin || isPoc;
+  const isLoggedIn  = !!user;
+
+  // Description
+  const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [descText, setDescText] = useState(event.description || "");
+
+  // Event details
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
+  const [details, setDetails] = useState({
+    name: event.name || "",
+    time: event.time || "",
+    cat:  event.cat  || CATEGORIES[0],
+    mode: event.mode || "offline",
+    poc:  event.poc  || "",
+  });
+
+  // Comments
   const [newComment, setNewComment] = useState("");
   const [replyText, setReplyText] = useState({});
   const [showReplyInput, setShowReplyInput] = useState(null);
 
+  function setDetail(field, value) {
+    setDetails(prev => ({ ...prev, [field]: value }));
+  }
+
   function handleSaveDesc() {
     onSave({ ...event, description: descText });
-    setIsEditing(false);
+    setIsEditingDesc(false);
+  }
+
+  function handleSaveDetails() {
+    onSave({ ...event, ...details });
+    setIsEditingDetails(false);
   }
 
   function handlePostComment() {
@@ -26,25 +50,25 @@ export default function EventModal({ event, onClose, onSave }) {
     const comment = {
       id: Date.now().toString(),
       author: user.displayName || user.email,
-      role: role,
+      role,
       text: newComment,
       time: new Date().toLocaleDateString(),
-      replies: []
+      replies: [],
     };
     onSave({ ...event, comments: [...(event.comments || []), comment] });
     setNewComment("");
   }
 
   function handlePostReply(commentId) {
-    if (!replyText[commentId]?.trim() || !isAuthorized) return;
+    if (!replyText[commentId]?.trim() || !isAdmin) return;
     const reply = {
       id: Date.now().toString(),
       author: user.displayName || user.email,
-      role: role,
+      role,
       text: replyText[commentId],
-      time: new Date().toLocaleDateString()
+      time: new Date().toLocaleDateString(),
     };
-    const updatedComments = event.comments.map(c => 
+    const updatedComments = event.comments.map(c =>
       c.id === commentId ? { ...c, replies: [...(c.replies || []), reply] } : c
     );
     onSave({ ...event, comments: updatedComments });
@@ -55,6 +79,8 @@ export default function EventModal({ event, onClose, onSave }) {
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
         <div className={styles.header}>
           <div className={styles.titleArea}>
             <h2 className={styles.title}>{event.name}</h2>
@@ -62,59 +88,146 @@ export default function EventModal({ event, onClose, onSave }) {
               <span>{event.time}</span>
               <span style={{ color: CAT_COLOR[event.cat] }}>{event.cat}</span>
               <span style={{ textTransform: "capitalize" }}>{event.mode}</span>
+              {event.poc && <span className={styles.pocTag}>POC: {event.poc}</span>}
             </div>
           </div>
           <button className={styles.closeBtn} onClick={onClose}>✕</button>
         </div>
-        
+
         <div className={styles.body}>
-          {/* Description Section */}
+
+          {/* ── Event Details Edit ── */}
+          {canEdit && (
+            <div className={styles.section}>
+              <div className={styles.sectionTitle}>
+                Event Details
+                {!isEditingDetails && (
+                  <button className={styles.editBtn} onClick={() => setIsEditingDetails(true)}>Edit</button>
+                )}
+              </div>
+
+              {isEditingDetails ? (
+                <>
+                  <label className={styles.fieldLabel}>
+                    Name
+                    <input
+                      className={styles.fieldInput}
+                      value={details.name}
+                      onChange={e => setDetail("name", e.target.value)}
+                    />
+                  </label>
+                  <label className={styles.fieldLabel}>
+                    Time / Date
+                    <input
+                      className={styles.fieldInput}
+                      placeholder="e.g. 6:00 PM – 9:00 PM · 3 hrs"
+                      value={details.time}
+                      onChange={e => setDetail("time", e.target.value)}
+                    />
+                  </label>
+                  <div className={styles.fieldRow}>
+                    <label className={styles.fieldLabel}>
+                      Category
+                      <select
+                        className={styles.fieldInput}
+                        value={details.cat}
+                        onChange={e => setDetail("cat", e.target.value)}
+                      >
+                        {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </label>
+                    <label className={styles.fieldLabel}>
+                      Mode
+                      <select
+                        className={styles.fieldInput}
+                        value={details.mode}
+                        onChange={e => setDetail("mode", e.target.value)}
+                      >
+                        <option value="offline">Offline</option>
+                        <option value="online">Online</option>
+                      </select>
+                    </label>
+                  </div>
+                  {isAdmin && (
+                    <label className={styles.fieldLabel}>
+                      POC Email
+                      <input
+                        className={styles.fieldInput}
+                        placeholder="poc@iiitl.ac.in"
+                        value={details.poc}
+                        onChange={e => setDetail("poc", e.target.value)}
+                      />
+                    </label>
+                  )}
+                  <div className={styles.fieldActions}>
+                    <button className={styles.cancelBtn} onClick={() => setIsEditingDetails(false)}>Cancel</button>
+                    <button className={styles.submitBtn} onClick={handleSaveDetails}>Save</button>
+                  </div>
+                </>
+              ) : (
+                <div className={styles.detailsGrid}>
+                  <span className={styles.detailKey}>Time</span>
+                  <span className={styles.detailVal}>{event.time || "—"}</span>
+                  <span className={styles.detailKey}>Category</span>
+                  <span className={styles.detailVal} style={{ color: CAT_COLOR[event.cat] }}>{event.cat}</span>
+                  <span className={styles.detailKey}>Mode</span>
+                  <span className={styles.detailVal} style={{ textTransform: "capitalize" }}>{event.mode}</span>
+                  {event.poc && <>
+                    <span className={styles.detailKey}>POC</span>
+                    <span className={styles.detailVal}>{event.poc}</span>
+                  </>}
+                </div>
+              )}
+            </div>
+          )}
+
+          {canEdit && <hr style={{ borderColor: "#1e2130", margin: "4px 0" }} />}
+
+          {/* ── Description ── */}
           <div className={styles.section}>
             <div className={styles.sectionTitle}>
               Description
-              {isAuthorized && !isEditing && (
-                <button className={styles.editBtn} onClick={() => setIsEditing(true)}>Edit</button>
+              {canEdit && !isEditingDesc && (
+                <button className={styles.editBtn} onClick={() => setIsEditingDesc(true)}>Edit</button>
               )}
             </div>
-            {isEditing ? (
+            {isEditingDesc ? (
               <div className={styles.section}>
-                <textarea 
+                <textarea
                   className={styles.descInput}
                   value={descText}
                   onChange={e => setDescText(e.target.value)}
                   placeholder="Enter event description..."
                 />
-                <button className={styles.submitBtn} onClick={handleSaveDesc} style={{alignSelf: 'flex-start'}}>
-                  Save Description
+                <button className={styles.submitBtn} onClick={handleSaveDesc} style={{ alignSelf: "flex-start" }}>
+                  Save
                 </button>
               </div>
             ) : (
-              <div className={styles.descText}>
-                {event.description || "No description provided."}
-              </div>
+              <div className={styles.descText}>{event.description || "No description provided."}</div>
             )}
           </div>
 
-          <hr style={{ borderColor: '#222', margin: '10px 0' }} />
+          <hr style={{ borderColor: "#222", margin: "10px 0" }} />
 
-          {/* Comments Section */}
+          {/* ── Comments ── */}
           <div className={styles.section}>
             <div className={styles.sectionTitle}>Comments</div>
-            
             <div className={styles.commentList}>
-              {(!event.comments || event.comments.length === 0) && <div className={styles.descText}>No comments yet.</div>}
+              {(!event.comments || event.comments.length === 0) && (
+                <div className={styles.descText}>No comments yet.</div>
+              )}
               {event.comments?.map(c => (
                 <div key={c.id} className={styles.commentCard}>
                   <div className={styles.commentHeader}>
                     <div>
                       <span className={styles.commentAuthor}>{c.author}</span>
-                      {c.role !== 'student' && <span className={styles.commentRole}>{c.role}</span>}
+                      {c.role !== "student" && <span className={styles.commentRole}>{c.role}</span>}
                     </div>
                     <span className={styles.commentTime}>{c.time}</span>
                   </div>
                   <div className={styles.commentText}>{c.text}</div>
-                  
-                  {/* Replies */}
+
                   {c.replies?.length > 0 && (
                     <div className={styles.replyList}>
                       {c.replies.map(r => (
@@ -129,25 +242,22 @@ export default function EventModal({ event, onClose, onSave }) {
                     </div>
                   )}
 
-                  {/* Reply Input for Authorized */}
-                  {isAuthorized && (
-                    <div style={{ marginTop: '10px' }}>
+                  {isAdmin && (
+                    <div style={{ marginTop: "10px" }}>
                       {showReplyInput === c.id ? (
                         <div className={styles.inputGroup}>
-                          <input 
+                          <input
                             className={styles.inputField}
                             placeholder="Write a reply..."
                             value={replyText[c.id] || ""}
                             onChange={e => setReplyText({ ...replyText, [c.id]: e.target.value })}
-                            onKeyDown={e => e.key === 'Enter' && handlePostReply(c.id)}
+                            onKeyDown={e => e.key === "Enter" && handlePostReply(c.id)}
                           />
-                          <button 
-                            className={styles.submitBtn} 
+                          <button
+                            className={styles.submitBtn}
                             onClick={() => handlePostReply(c.id)}
                             disabled={!replyText[c.id]?.trim()}
-                          >
-                            Reply
-                          </button>
+                          >Reply</button>
                         </div>
                       ) : (
                         <button className={styles.editBtn} onClick={() => setShowReplyInput(c.id)}>Reply</button>
@@ -158,30 +268,28 @@ export default function EventModal({ event, onClose, onSave }) {
               ))}
             </div>
 
-            {/* New Comment Input */}
             {isLoggedIn ? (
-              <div className={styles.inputGroup} style={{ marginTop: '10px' }}>
-                <input 
-                  className={styles.inputField} 
-                  placeholder="Add a comment..." 
+              <div className={styles.inputGroup} style={{ marginTop: "10px" }}>
+                <input
+                  className={styles.inputField}
+                  placeholder="Add a comment..."
                   value={newComment}
                   onChange={e => setNewComment(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handlePostComment()}
+                  onKeyDown={e => e.key === "Enter" && handlePostComment()}
                 />
-                <button 
-                  className={styles.submitBtn} 
+                <button
+                  className={styles.submitBtn}
                   onClick={handlePostComment}
                   disabled={!newComment.trim()}
-                >
-                  Post
-                </button>
+                >Post</button>
               </div>
             ) : (
-              <div className={styles.descText} style={{ textAlign: 'center', marginTop: '10px' }}>
+              <div className={styles.descText} style={{ textAlign: "center", marginTop: "10px" }}>
                 Please sign in to add comments.
               </div>
             )}
           </div>
+
         </div>
       </div>
     </div>

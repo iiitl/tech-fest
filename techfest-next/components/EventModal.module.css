@@ -48,6 +48,17 @@
   color: #888;
   display: flex;
   gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pocTag {
+  font-size: 0.75rem;
+  color: #6b7280;
+  background: #1a1d27;
+  border: 1px solid #2a2d3a;
+  border-radius: 20px;
+  padding: 2px 10px;
 }
 .closeBtn {
   background: none;
@@ -221,3 +232,79 @@
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* ── Event Details Edit ── */
+.detailsGrid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 16px;
+  font-size: 0.88rem;
+}
+
+.detailKey {
+  color: #6b7280;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.detailVal {
+  color: #d1cdc7;
+}
+
+.fieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.fieldInput {
+  background: #1a1d27;
+  border: 1px solid #2a2d3a;
+  color: #e8e4de;
+  border-radius: 7px;
+  padding: 8px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  transition: border-color 0.2s;
+}
+
+.fieldInput:focus {
+  outline: none;
+  border-color: #f97316;
+}
+
+.fieldInput option {
+  background: #1a1d27;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.fieldActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.cancelBtn {
+  padding: 7px 16px;
+  border: 1.5px solid #2a2d3a;
+  border-radius: 7px;
+  background: transparent;
+  color: #9ca3af;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.cancelBtn:hover { border-color: #6b7280; color: #e8e4de; }

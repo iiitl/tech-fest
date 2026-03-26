@@ -76,6 +76,11 @@ export default function BoardView({ activeFilter, activeCats }) {
       await saveEvent(updatedEvent.id, {
         description: updatedEvent.description,
         comments: updatedEvent.comments,
+        name: updatedEvent.name,
+        time: updatedEvent.time,
+        cat:  updatedEvent.cat,
+        mode: updatedEvent.mode,
+        poc:  updatedEvent.poc,
       });
     } catch (e) {
       console.error(e);
