@@ -31,7 +31,8 @@ export { auth };
 const ROLES = {
   "lcs2024016@iiitl.ac.in": "admin",
   "lci2024010@iiitl.ac.in":"admin",
-  "lit2023030@iiitl.ac.in":"admin"
+  "lit2023030@iiitl.ac.in":"admin",
+  "lit2024045@iiitl.ac.in":"admin"
 };
 
 const ALLOW_ALL_EDIT = false; 
