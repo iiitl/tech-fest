@@ -1,20 +1,28 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth, getRole, signInWithGoogle, signOut } from "@/lib/firebase";
+import { auth, signInWithGoogle, signOut } from "@/lib/firebase";
+import { getRoleFromDb } from "@/app/actions/roles";
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-  const [error, setError] = useState("");
+  const [user, setUser]       = useState(null);
+  const [role, setRole]       = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState("");
 
   useEffect(() => {
-    if (!auth) return;
-    const unsub = onAuthStateChanged(auth, (u) => {
+    if (!auth) { setLoading(false); return; }
+    const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u || null);
-      setRole(u ? getRole(u.email) : null);
+      if (u) {
+        const r = await getRoleFromDb(u.email);
+        setRole(r);
+      } else {
+        setRole(null);
+      }
+      setLoading(false);
     });
     return unsub;
   }, []);
@@ -22,7 +30,8 @@ export function AuthProvider({ children }) {
   async function login() {
     setError("");
     try {
-      const { user: u, role: r } = await signInWithGoogle();
+      const { user: u } = await signInWithGoogle();
+      const r = await getRoleFromDb(u.email);
       setUser(u);
       setRole(r);
     } catch (e) {
@@ -37,7 +46,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, role, login, logout, error }}>
+    <AuthContext.Provider value={{ user, role, loading, login, logout, error }}>
       {children}
     </AuthContext.Provider>
   );
