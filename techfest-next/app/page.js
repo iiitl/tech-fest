@@ -1,14 +1,13 @@
 "use client";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import AuthGate from "@/components/AuthGate";
 import Header from "@/components/Header";
 import Timeline from "@/components/Timeline";
 import WeekGrid from "@/components/WeekGrid";
 import BoardView from "@/components/BoardView";
 
 export default function Home() {
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeCats, setActiveCats] = useState(new Set());
   const [activeView, setActiveView] = useState("Split");
@@ -25,7 +24,6 @@ export default function Home() {
 
   return (
     <>
-      {!user && <AuthGate />}
       <Header
         onFilterChange={setActiveFilter}
         onCatToggle={toggleCat}
