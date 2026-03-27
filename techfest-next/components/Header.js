@@ -6,7 +6,7 @@ import RoleManager from "./RoleManager";
 import styles from "./Header.module.css";
 
 export default function Header({ onFilterChange, onCatToggle, activeCats, activeView, onViewChange }) {
-  const { user, role, logout } = useAuth();
+  const { user, role, login, logout } = useAuth();
   const [activeFilter, setActiveFilter] = useState("all");
   const [showCats, setShowCats] = useState(false);
   const [showRoleManager, setShowRoleManager] = useState(false);
@@ -32,7 +32,7 @@ export default function Header({ onFilterChange, onCatToggle, activeCats, active
                 <button key={v} className={`${styles.viewBtn} ${activeView === v ? styles.active : ""}`} onClick={() => onViewChange(v)}>{v}</button>
               ))}
             </div>
-            {user && (
+            {user ? (
               <div className={styles.userChip}>
                 {user.photoURL
                   ? <img className={styles.avatar} src={user.photoURL} alt="avatar" referrerPolicy="no-referrer" />
@@ -42,6 +42,8 @@ export default function Header({ onFilterChange, onCatToggle, activeCats, active
                 <span className={styles.roleBadge}>{role}</span>
                 <button className={styles.signOutBtn} onClick={logout} title="Sign out">×</button>
               </div>
+            ) : (
+              <button className={styles.signInBtn} onClick={login}>Sign in</button>
             )}
             {role === "admin" && (
               <button className={styles.manageRolesBtn} onClick={() => setShowRoleManager(true)}>
