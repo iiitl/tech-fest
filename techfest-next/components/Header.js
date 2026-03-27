@@ -6,7 +6,7 @@ import RoleManager from "./RoleManager";
 import styles from "./Header.module.css";
 
 export default function Header({ onFilterChange, onCatToggle, activeCats, activeView, onViewChange }) {
-  const { user, role, login, logout } = useAuth();
+  const { user, role, login, logout, error, loading } = useAuth();
   const [activeFilter, setActiveFilter] = useState("all");
   const [showCats, setShowCats] = useState(false);
   const [showRoleManager, setShowRoleManager] = useState(false);
@@ -42,8 +42,13 @@ export default function Header({ onFilterChange, onCatToggle, activeCats, active
                 <span className={styles.roleBadge}>{role}</span>
                 <button className={styles.signOutBtn} onClick={logout} title="Sign out">×</button>
               </div>
+            ) : loading ? (
+              <div className={styles.authLoader} />
             ) : (
-              <button className={styles.signInBtn} onClick={login}>Sign in</button>
+              <div className={styles.signInWrap}>
+                <button className={styles.signInBtn} onClick={login}>Sign in</button>
+                {error && <span className={styles.signInError}>{error}</span>}
+              </div>
             )}
             {role === "admin" && (
               <button className={styles.manageRolesBtn} onClick={() => setShowRoleManager(true)}>
