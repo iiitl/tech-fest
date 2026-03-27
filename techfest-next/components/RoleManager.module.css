@@ -172,8 +172,14 @@
 
 @media (max-width: 600px) {
   .overlay { align-items: flex-end; }
-  .panel { max-width: 100%; border-left: none; border-top: 1px solid #2a2d3a; max-height: 90dvh; border-radius: 16px 16px 0 0; }
-  animation: sheetUp 0.25s ease-out;
+  .panel {
+    max-width: 100%;
+    border-left: none;
+    border-top: 1px solid #2a2d3a;
+    max-height: 90dvh;
+    border-radius: 16px 16px 0 0;
+    animation: sheetUp 0.25s ease-out;
+  }
 }
 
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
