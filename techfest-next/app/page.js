@@ -20,7 +20,12 @@ export default function Home() {
     });
   }
 
-  if (loading) return null;
+  if (loading) return (
+    <div style={{ display:"flex", alignItems:"center", justifyContent:"center", height:"100vh", background:"#0f1117" }}>
+      <div style={{ width:32, height:32, border:"3px solid #2a2d3a", borderTopColor:"#f97316", borderRadius:"50%", animation:"spin 0.7s linear infinite" }} />
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
 
   return (
     <>
