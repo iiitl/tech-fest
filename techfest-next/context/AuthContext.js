@@ -24,11 +24,12 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     if (!auth) { setLoading(false); return; }
     const unsub = onAuthStateChanged(auth, async (u) => {
-      setUser(u || null);
       if (u) {
         const r = await fetchRole(u.email);
+        setUser(u);
         setRole(r);
       } else {
+        setUser(null);
         setRole(null);
       }
       setLoading(false);
@@ -39,10 +40,8 @@ export function AuthProvider({ children }) {
   async function login() {
     setError("");
     try {
-      const { user: u } = await signInWithGoogle();
-      const r = await fetchRole(u.email);
-      setUser(u);
-      setRole(r);
+      await signInWithGoogle();
+      // onAuthStateChanged will handle setting user + role
     } catch (e) {
       setError(e.message);
     }
