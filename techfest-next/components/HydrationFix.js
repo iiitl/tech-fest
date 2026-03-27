@@ -1,26 +1,44 @@
 "use client";
 import { useEffect } from "react";
 
+const isBrowserExtensionError = (msg) =>
+  typeof msg === "string" &&
+  (msg.includes("removeChild") ||
+    msg.includes("NotFoundError") ||
+    msg.includes("insertBefore") ||
+    msg.includes("Hydration"));
+
 export default function HydrationFix() {
   useEffect(() => {
+    // Suppress console errors from extensions
     const originalError = console.error;
     console.error = (...args) => {
-      const msg = args[0]?.toString?.() ?? "";
-      if (msg.includes("removeChild") || msg.includes("NotFoundError") || msg.includes("Hydration")) return;
+      if (isBrowserExtensionError(args[0]?.toString?.())) return;
       originalError(...args);
     };
 
-    const handler = (event) => {
-      const msg = event.message ?? "";
-      if (msg.includes("removeChild") || msg.includes("NotFoundError")) {
+    // Suppress window error events
+    const onError = (event) => {
+      if (isBrowserExtensionError(event?.message) || isBrowserExtensionError(event?.error?.message)) {
         event.preventDefault();
-        event.stopPropagation();
+        event.stopImmediatePropagation();
+        return true;
       }
     };
 
-    window.addEventListener("error", handler);
+    // Suppress unhandled promise rejections
+    const onUnhandled = (event) => {
+      if (isBrowserExtensionError(event?.reason?.message)) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener("error", onError, true);
+    window.addEventListener("unhandledrejection", onUnhandled, true);
+
     return () => {
-      window.removeEventListener("error", handler);
+      window.removeEventListener("error", onError, true);
+      window.removeEventListener("unhandledrejection", onUnhandled, true);
       console.error = originalError;
     };
   }, []);

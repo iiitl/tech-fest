@@ -1,7 +1,9 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut as fbSignOut } from "firebase/auth";
 import { auth, signInWithGoogle, signOut } from "@/lib/firebase";
+
+const ALLOWED_DOMAIN = process.env.NEXT_PUBLIC_ALLOWED_DOMAIN || "iiitl.ac.in";
 
 const AuthContext = createContext(null);
 
@@ -25,6 +27,15 @@ export function AuthProvider({ children }) {
     if (!auth) { setLoading(false); return; }
     const unsub = onAuthStateChanged(auth, async (u) => {
       if (u) {
+        // enforce domain restriction at the state level too
+        if (!u.email.endsWith("@" + ALLOWED_DOMAIN)) {
+          await fbSignOut(auth);
+          setUser(null);
+          setRole(null);
+          setError(`Access restricted to @${ALLOWED_DOMAIN} accounts.`);
+          setLoading(false);
+          return;
+        }
         const r = await fetchRole(u.email);
         setUser(u);
         setRole(r);
@@ -39,11 +50,13 @@ export function AuthProvider({ children }) {
 
   async function login() {
     setError("");
+    setLoading(true);
     try {
       await signInWithGoogle();
-      // onAuthStateChanged will handle setting user + role
+      // onAuthStateChanged handles the rest
     } catch (e) {
       setError(e.message);
+      setLoading(false);
     }
   }
 
