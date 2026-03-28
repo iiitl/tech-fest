@@ -204,7 +204,7 @@ export default function EventModal({ event, onClose, onSave }) {
                 </button>
               </div>
             ) : (
-              <div className={styles.descText}>{event.description || "No description provided."}</div>
+              <div className={styles.descText} style={{ whiteSpace: "pre-wrap" }}>{event.description || "No description provided."}</div>
             )}
           </div>
 
