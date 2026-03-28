@@ -2,14 +2,14 @@ export const CAT_CLASS = {
   FOSS: "cat-foss", Blockchain: "cat-blockchain", App: "cat-app",
   "GDG Web": "cat-gdgweb", Web: "cat-web", CP: "cat-cp",
   InfoSec: "cat-infosec", Design: "cat-design", ML: "cat-ml",
-  "GDG FoSS": "cat-gdgfoss", GDG: "cat-gdg",
+  "GDG FoSS": "cat-gdgfoss", GDG: "cat-gdg", "GDG ML Wing": "cat-gdgml",
 };
 
 export const CAT_COLOR = {
   FOSS: "#2d8a4e", Blockchain: "#3b6eda", App: "#e8a030",
   "GDG Web": "#e85830", Web: "#c44a2f", CP: "#d4772c",
   InfoSec: "#b83a5e", Design: "#8b5cf6", ML: "#2196F3",
-  "GDG FoSS": "#0d9488", GDG: "#e85830",
+  "GDG FoSS": "#0d9488", GDG: "#e85830", "GDG ML Wing": "#2196F3",
 };
 
 export const CATEGORIES = Object.keys(CAT_COLOR);

@@ -37,14 +37,34 @@ export default function WeekGrid({ activeFilter, activeCats }) {
         const dbEventsMap = {};
         eventsFromDb.forEach(e => { dbEventsMap[e.eventId] = e; });
         if (eventsFromDb.length > 0) {
-          setWeeksData(prev => prev.map(week => week.map(day => ({
-            ...day,
-            events: day.events.map(ev => ({
+          setWeeksData(prev => prev.map((week, wIdx) => week.map((day, dIdx) => {
+            const updatedEvents = day.events.map(ev => ({
               ...ev,
               description: dbEventsMap[ev.id]?.description || ev.description,
               comments: dbEventsMap[ev.id]?.comments || ev.comments
-            }))
-          }))));
+            }));
+
+            const newEvents = eventsFromDb.filter(
+              e => e.eventId && e.eventId.startsWith("custom-") && e.weekIdx === wIdx && e.dayIdx === dIdx
+            ).map(e => ({
+              id: e.eventId,
+              name: e.name,
+              time: e.time,
+              cat: e.cat,
+              mode: e.mode,
+              description: e.description,
+              comments: e.comments || [],
+              poc: e.poc
+            }));
+
+            const existingIds = new Set(updatedEvents.map(e => e.id));
+            const uniqueNewEvents = newEvents.filter(e => !existingIds.has(e.id));
+
+            return {
+              ...day,
+              events: [...updatedEvents, ...uniqueNewEvents]
+            };
+          })));
         }
       } catch (err) {
         console.error("Failed to load events:", err);
@@ -109,6 +129,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
         name: newEvent.name, time: newEvent.time,
         cat: newEvent.cat, mode: newEvent.mode,
         description: newEvent.description, comments: [],
+        weekIdx, dayIdx
       });
     } catch (err) {
       console.error("Failed to persist new event:", err);
