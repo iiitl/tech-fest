@@ -38,11 +38,20 @@ export default function WeekGrid({ activeFilter, activeCats }) {
         eventsFromDb.forEach(e => { dbEventsMap[e.eventId] = e; });
         if (eventsFromDb.length > 0) {
           setWeeksData(prev => prev.map((week, wIdx) => week.map((day, dIdx) => {
-            const updatedEvents = day.events.map(ev => ({
-              ...ev,
-              description: dbEventsMap[ev.id]?.description || ev.description,
-              comments: dbEventsMap[ev.id]?.comments || ev.comments
-            }));
+            const updatedEvents = day.events.map(ev => {
+              const db = dbEventsMap[ev.id];
+              if (!db) return ev;
+              return {
+                ...ev,
+                description: db.description ?? ev.description,
+                comments: db.comments ?? ev.comments,
+                name: db.name ?? ev.name,
+                time: db.time ?? ev.time,
+                cat: db.cat ?? ev.cat,
+                mode: db.mode ?? ev.mode,
+                poc: db.poc ?? ev.poc,
+              };
+            });
 
             const newEvents = eventsFromDb.filter(
               e => e.eventId && e.eventId.startsWith("custom-") && e.weekIdx === wIdx && e.dayIdx === dIdx
