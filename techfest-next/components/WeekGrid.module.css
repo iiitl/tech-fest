@@ -175,7 +175,7 @@
     border-radius: 12px;
     min-height: unset;
   }
-  .dayCol.active { display: block; }
+  .active { display: block; }
 
   .dayHeader {
     border-radius: 12px 12px 0 0;

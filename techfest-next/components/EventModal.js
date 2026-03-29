@@ -8,9 +8,10 @@ export default function EventModal({ event, onClose, onSave }) {
   const { user, role } = useAuth();
 
   const isAdmin     = role === "admin";
+  const isOrganizer = role === "organizer";
   const isPoc       = !!user && !!event.poc && user.email === event.poc;
-  const canEdit     = isAdmin || isPoc;
-  const canReply    = isAdmin || isPoc;
+  const canEdit     = isAdmin || isOrganizer || isPoc;
+  const canReply    = isAdmin || isOrganizer || isPoc;
   const isLoggedIn  = !!user;
 
   // Description
