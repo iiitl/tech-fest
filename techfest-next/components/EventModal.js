@@ -7,9 +7,10 @@ import { CAT_COLOR, CATEGORIES } from "@/lib/data";
 export default function EventModal({ event, onClose, onSave }) {
   const { user, role } = useAuth();
 
-  const isAdmin     = role === "admin" || role === "organizer";
+  const isAdmin     = role === "admin";
   const isPoc       = !!user && !!event.poc && user.email === event.poc;
   const canEdit     = isAdmin || isPoc;
+  const canReply    = isAdmin || isPoc;
   const isLoggedIn  = !!user;
 
   // Description
@@ -60,7 +61,7 @@ export default function EventModal({ event, onClose, onSave }) {
   }
 
   function handlePostReply(commentId) {
-    if (!replyText[commentId]?.trim() || !isAdmin) return;
+    if (!replyText[commentId]?.trim() || !canReply) return;
     const reply = {
       id: Date.now().toString(),
       author: user.displayName || user.email,
@@ -204,7 +205,7 @@ export default function EventModal({ event, onClose, onSave }) {
                 </button>
               </div>
             ) : (
-              <div className={styles.descText}>{event.description || "No description provided."}</div>
+              <div className={styles.descText} style={{ whiteSpace: "pre-wrap" }}>{event.description || "No description provided."}</div>
             )}
           </div>
 
@@ -242,7 +243,7 @@ export default function EventModal({ event, onClose, onSave }) {
                     </div>
                   )}
 
-                  {isAdmin && (
+                  {canReply && (
                     <div style={{ marginTop: "10px" }}>
                       {showReplyInput === c.id ? (
                         <div className={styles.inputGroup}>

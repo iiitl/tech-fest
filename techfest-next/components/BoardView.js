@@ -46,11 +46,20 @@ export default function BoardView({ activeFilter, activeCats }) {
             prev.map(week =>
               week.map(day => ({
                 ...day,
-                events: day.events.map(ev => ({
-                  ...ev,
-                  description: map[ev.id]?.description || ev.description,
-                  comments: map[ev.id]?.comments || ev.comments,
-                })),
+                events: day.events.map(ev => {
+                  const db = map[ev.id];
+                  if (!db) return ev;
+                  return {
+                    ...ev,
+                    description: db.description ?? ev.description,
+                    comments: db.comments ?? ev.comments,
+                    name: db.name ?? ev.name,
+                    time: db.time ?? ev.time,
+                    cat: db.cat ?? ev.cat,
+                    mode: db.mode ?? ev.mode,
+                    poc: db.poc ?? ev.poc,
+                  };
+                }),
               }))
             )
           );
