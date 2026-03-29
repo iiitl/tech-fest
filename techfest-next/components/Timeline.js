@@ -1,9 +1,8 @@
 "use client";
-import { timelineBars, week1, week2, CAT_COLOR } from "@/lib/data";
+import { timelineBars, CAT_COLOR } from "@/lib/data";
 import styles from "./Timeline.module.css";
 
 const DATES = ["Apr 6","Apr 7","Apr 8","Apr 9","Apr 10","Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 17","Apr 18"];
-const allDays = [...week1, ...week2].filter(d => d.events.length > 0);
 
 export default function Timeline() {
   return (
@@ -30,24 +29,7 @@ export default function Timeline() {
         </div>
       </div>
 
-      <div className={styles.mobileList}>
-        {allDays.map(day => (
-          <div key={day.date} className={styles.dayGroup}>
-            <div className={styles.dayLabel}>{day.day} · {day.date}</div>
-            {day.events.map((ev, i) => (
-              <div key={i} className={styles.eventRow} style={{ borderLeftColor: CAT_COLOR[ev.cat] }}>
-                <div className={styles.eventName}>{ev.name}</div>
-                <div className={styles.eventMeta}>
-                  <span style={{ color: CAT_COLOR[ev.cat] }}>{ev.cat}</span>
-                  <span className={styles.dot}>·</span>
-                  <span>{ev.time}</span>
-                  <span className={`${styles.modeBadge} ${ev.mode === "online" ? styles.online : styles.offline}`}>{ev.mode}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
+
     </>
   );
 }
