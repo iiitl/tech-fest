@@ -38,7 +38,7 @@ export default function Home() {
       />
       {activeView === "Split" && (
         <>
-          <Timeline />
+          <div className="desktopOnly"><Timeline /></div>
           <WeekGrid activeFilter={activeFilter} activeCats={activeCats} />
         </>
       )}
