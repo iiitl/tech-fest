@@ -1,16 +1,23 @@
 "use client";
 import { useState } from "react";
-import { CATEGORIES, CAT_COLOR } from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import DateTimePicker, { formatDisplay } from "./DateTimePicker";
 import styles from "./AddEventModal.module.css";
 
 export default function AddEventModal({ dayDate, onClose, onAdd }) {
+  // Pre-select the date from dayDate e.g. "Mon, Apr 6" -> 6
+  const defaultDate = (() => {
+    const m = dayDate?.match(/Apr (\d+)/);
+    return m ? parseInt(m[1]) : null;
+  })();
+
   const [form, setForm] = useState({
     name: "",
-    time: "",
     cat: CATEGORIES[0],
     mode: "offline",
     description: "",
   });
+  const [dt, setDt] = useState({ startDate: defaultDate ? `2025-04-${String(defaultDate).padStart(2,"0")}` : "", startTime: "", endDate: "", endTime: "" });
   const [error, setError] = useState("");
 
   function set(field, value) {
@@ -20,9 +27,10 @@ export default function AddEventModal({ dayDate, onClose, onAdd }) {
   function handleSubmit(e) {
     e.preventDefault();
     if (!form.name.trim()) return setError("Event name is required.");
-    if (!form.time.trim()) return setError("Time is required.");
+    if (!dt.startDate) return setError("Date is required.");
     setError("");
-    onAdd(form);
+    const time = formatDisplay(dt.startDate, dt.startTime, dt.endDate, dt.endTime);
+    onAdd({ ...form, time, startDate: dt.startDate, startTime: dt.startTime, endDate: dt.endDate, endTime: dt.endTime });
   }
 
   return (
@@ -48,37 +56,21 @@ export default function AddEventModal({ dayDate, onClose, onAdd }) {
             />
           </label>
 
-          <label className={styles.label}>
-            Time
-            <input
-              className={styles.input}
-              placeholder="e.g. 6:00 PM – 9:00 PM · 3 hrs"
-              value={form.time}
-              onChange={e => set("time", e.target.value)}
-            />
-          </label>
+          <div className={styles.label}>
+            Date & Time
+            <DateTimePicker value={dt} onChange={setDt} />
+          </div>
 
           <div className={styles.row}>
             <label className={styles.label}>
               Category
-              <select
-                className={styles.input}
-                value={form.cat}
-                onChange={e => set("cat", e.target.value)}
-              >
-                {CATEGORIES.map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
+              <select className={styles.input} value={form.cat} onChange={e => set("cat", e.target.value)}>
+                {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </label>
-
             <label className={styles.label}>
               Mode
-              <select
-                className={styles.input}
-                value={form.mode}
-                onChange={e => set("mode", e.target.value)}
-              >
+              <select className={styles.input} value={form.mode} onChange={e => set("mode", e.target.value)}>
                 <option value="offline">Offline</option>
                 <option value="online">Online</option>
               </select>

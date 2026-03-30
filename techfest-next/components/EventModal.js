@@ -3,8 +3,9 @@ import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./EventModal.module.css";
 import { CAT_COLOR, CATEGORIES } from "@/lib/data";
+import DateTimePicker, { formatDisplay } from "./DateTimePicker";
 
-export default function EventModal({ event, onClose, onSave }) {
+export default function EventModal({ event, onClose, onSave, onDelete }) {
   const { user, role } = useAuth();
 
   const isAdmin     = role === "admin";
@@ -22,10 +23,15 @@ export default function EventModal({ event, onClose, onSave }) {
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [details, setDetails] = useState({
     name: event.name || "",
-    time: event.time || "",
     cat:  event.cat  || CATEGORIES[0],
     mode: event.mode || "offline",
     poc:  event.poc  || "",
+  });
+  const [dt, setDt] = useState({
+    startDate: event.startDate || "",
+    startTime: event.startTime || "",
+    endDate:   event.endDate   || "",
+    endTime:   event.endTime   || "",
   });
 
   // Comments
@@ -42,8 +48,20 @@ export default function EventModal({ event, onClose, onSave }) {
     setIsEditingDesc(false);
   }
 
+  const [toast, setToast] = useState("");
+
+  function showToast(msg) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 3000);
+  }
+
   function handleSaveDetails() {
-    onSave({ ...event, ...details });
+    if (dt.startDate && dt.endDate && dt.startDate > dt.endDate) {
+      showToast("Start date cannot be after end date.");
+      return;
+    }
+    const time = formatDisplay(dt.startDate, dt.startTime, dt.endDate, dt.endTime) || event.time;
+    onSave({ ...event, ...details, time, startDate: dt.startDate, startTime: dt.startTime, endDate: dt.endDate, endTime: dt.endTime });
     setIsEditingDetails(false);
   }
 
@@ -81,19 +99,29 @@ export default function EventModal({ event, onClose, onSave }) {
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
+        {toast && (
+          <div style={{ position:"sticky", top:0, zIndex:10, background:"#c0392b", color:"#fff", padding:"8px 16px", borderRadius:"6px", margin:"0 0 8px", fontSize:"0.85rem", textAlign:"center" }}>
+            {toast}
+          </div>
+        )}
 
         {/* Header */}
         <div className={styles.header}>
           <div className={styles.titleArea}>
             <h2 className={styles.title}>{event.name}</h2>
             <div className={styles.subtitle}>
-              <span>{event.time}</span>
+              <span>{event.startDate ? formatDisplay(event.startDate, event.startTime, event.endDate, event.endTime) : event.time}</span>
               <span style={{ color: CAT_COLOR[event.cat] }}>{event.cat}</span>
               <span style={{ textTransform: "capitalize" }}>{event.mode}</span>
               {event.poc && <span className={styles.pocTag}>POC: {event.poc}</span>}
             </div>
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <div className={styles.headerRight}>
+            {canEdit && onDelete && (
+              <button className={styles.deleteBtn} onClick={() => { if (confirm(`Delete "${event.name}"?`)) onDelete(event.id); }}>🗑</button>
+            )}
+            <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          </div>
         </div>
 
         <div className={styles.body}>
@@ -118,15 +146,10 @@ export default function EventModal({ event, onClose, onSave }) {
                       onChange={e => setDetail("name", e.target.value)}
                     />
                   </label>
-                  <label className={styles.fieldLabel}>
-                    Time / Date
-                    <input
-                      className={styles.fieldInput}
-                      placeholder="e.g. 6:00 PM – 9:00 PM · 3 hrs"
-                      value={details.time}
-                      onChange={e => setDetail("time", e.target.value)}
-                    />
-                  </label>
+                  <div className={styles.fieldLabel}>
+                    Date & Time
+                    <DateTimePicker value={dt} onChange={setDt} />
+                  </div>
                   <div className={styles.fieldRow}>
                     <label className={styles.fieldLabel}>
                       Category
@@ -169,7 +192,7 @@ export default function EventModal({ event, onClose, onSave }) {
               ) : (
                 <div className={styles.detailsGrid}>
                   <span className={styles.detailKey}>Time</span>
-                  <span className={styles.detailVal}>{event.time || "—"}</span>
+                  <span className={styles.detailVal}>{event.startDate ? formatDisplay(event.startDate, event.startTime, event.endDate, event.endTime) : (event.time || "—")}</span>
                   <span className={styles.detailKey}>Category</span>
                   <span className={styles.detailVal} style={{ color: CAT_COLOR[event.cat] }}>{event.cat}</span>
                   <span className={styles.detailKey}>Mode</span>

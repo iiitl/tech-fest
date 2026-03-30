@@ -108,6 +108,23 @@ export const week2 = [
   },
 ];
 
+// Maps ISO date -> { weekIdx, dayIdx } for the calendar grid
+export const DATE_TO_IDX = {
+  "2025-04-06": { weekIdx: 0, dayIdx: 0 },
+  "2025-04-07": { weekIdx: 0, dayIdx: 1 },
+  "2025-04-08": { weekIdx: 0, dayIdx: 2 },
+  "2025-04-09": { weekIdx: 0, dayIdx: 3 },
+  "2025-04-10": { weekIdx: 0, dayIdx: 4 },
+  "2025-04-11": { weekIdx: 0, dayIdx: 5 },
+  "2025-04-12": { weekIdx: 0, dayIdx: 6 },
+  "2025-04-13": { weekIdx: 1, dayIdx: 0 },
+  "2025-04-14": { weekIdx: 1, dayIdx: 1 },
+  "2025-04-15": { weekIdx: 1, dayIdx: 2 },
+  "2025-04-16": { weekIdx: 1, dayIdx: 3 },
+  "2025-04-17": { weekIdx: 1, dayIdx: 4 },
+  "2025-04-18": { weekIdx: 1, dayIdx: 5 },
+};
+
 export const timelineBars = [
   { label: "RiceFest", start: 0, end: 12, color: "#34d399" },
   { label: "Contract Battle", start: 0, end: 2, color: "#34d399" },
