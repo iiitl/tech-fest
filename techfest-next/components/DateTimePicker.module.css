@@ -1,0 +1,52 @@
+.picker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.input {
+  background: #1a1d27;
+  border: 1px solid #2a2d3a;
+  border-radius: 7px;
+  color: #e8e4de;
+  padding: 8px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  width: 100%;
+  transition: border-color 0.2s;
+  color-scheme: dark;
+}
+.input:focus {
+  outline: none;
+  border-color: #f97316;
+}
+
+.preview {
+  font-size: 0.8rem;
+  color: #34d399;
+  font-weight: 600;
+  padding: 6px 10px;
+  background: rgba(52, 211, 153, 0.08);
+  border-radius: 6px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+}

@@ -1,10 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
-import { week1, week2, CAT_COLOR, CAT_CLASS } from "@/lib/data";
-import { getEvents } from "@/app/actions/events";
+import { week1, week2, CAT_COLOR } from "@/lib/data";
+import { getEvents, saveEvent, deleteEvent } from "@/app/actions/events";
 import EventCard from "./EventCard";
 import EventModal from "./EventModal";
-import { saveEvent } from "@/app/actions/events";
 import styles from "./BoardView.module.css";
 
 function buildAllEvents(weeksData) {
@@ -23,13 +22,12 @@ export default function BoardView({ activeFilter, activeCats }) {
   const [weeksData, setWeeksData] = useState(() =>
     [week1, week2].map((week, wIdx) =>
       week.map((day, dIdx) => ({
-        ...day,
+        day: day.day, date: day.date, badge: day.badge,
         events: day.events.map((ev, eIdx) => ({
-          ...ev,
-          id: `${wIdx}-${dIdx}-${eIdx}`,
+          ...ev, id: `${wIdx}-${dIdx}-${eIdx}`,
           description: ev.description || "Join us and participate! No detailed description provided yet.",
           comments: ev.comments || [],
-        })),
+        }))
       }))
     )
   );
@@ -39,34 +37,18 @@ export default function BoardView({ activeFilter, activeCats }) {
     async function load() {
       try {
         const dbEvents = await getEvents();
-        const map = {};
-        dbEvents.forEach(e => { map[e.eventId] = e; });
-        if (dbEvents.length > 0) {
-          setWeeksData(prev =>
-            prev.map(week =>
-              week.map(day => ({
-                ...day,
-                events: day.events.map(ev => {
-                  const db = map[ev.id];
-                  if (!db) return ev;
-                  return {
-                    ...ev,
-                    description: db.description ?? ev.description,
-                    comments: db.comments ?? ev.comments,
-                    name: db.name ?? ev.name,
-                    time: db.time ?? ev.time,
-                    cat: db.cat ?? ev.cat,
-                    mode: db.mode ?? ev.mode,
-                    poc: db.poc ?? ev.poc,
-                  };
-                }),
-              }))
-            )
-          );
-        }
-      } catch (e) {
-        console.error(e);
-      }
+        if (!dbEvents.length) return;
+        setWeeksData(prev =>
+          prev.map((week, wIdx) =>
+            week.map((day, dIdx) => ({
+              ...day,
+              events: dbEvents
+                .filter(e => e.weekIdx === wIdx && e.dayIdx === dIdx)
+                .map(e => ({ id: e.eventId, name: e.name, time: e.time, cat: e.cat, mode: e.mode, description: e.description || "Join us and participate! No detailed description provided yet.", comments: e.comments || [], poc: e.poc })),
+            }))
+          )
+        );
+      } catch (e) { console.error(e); }
     }
     load();
   }, []);
@@ -94,6 +76,16 @@ export default function BoardView({ activeFilter, activeCats }) {
     } catch (e) {
       console.error(e);
     }
+  }
+
+  async function handleDelete(eventId) {
+    setWeeksData(prev =>
+      prev.map(week =>
+        week.map(day => ({ ...day, events: day.events.filter(e => e.id !== eventId) }))
+      )
+    );
+    setSelectedEvent(null);
+    try { await deleteEvent(eventId); } catch (e) { console.error(e); }
   }
 
   let events = buildAllEvents(weeksData);
@@ -138,6 +130,7 @@ export default function BoardView({ activeFilter, activeCats }) {
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
           onSave={handleSave}
+          onDelete={handleDelete}
         />
       )}
     </>
