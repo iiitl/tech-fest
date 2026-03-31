@@ -5,6 +5,13 @@ import styles from "./RoleManager.module.css";
 
 export default function RoleManager({ onClose }) {
   const { user, refreshRole } = useAuth();
+  function getBatchYear(email) {
+    const m = email.match(/^[a-z]{3}(\d{2,4})\d{3}@/i);
+    if (!m) return null;
+    const y = m[1];
+    return y.length === 2 ? `20${y}` : y;
+  }
+
   const [rows, setRows]       = useState([]);
   const [email, setEmail]     = useState("");
   const [newRole, setNewRole] = useState("organizer");
@@ -125,6 +132,9 @@ export default function RoleManager({ onClose }) {
                     <option value="organizer">Organizer</option>
                     <option value="student">Student</option>
                   </select>
+                  {getBatchYear(r.email) && (
+                    <span className={styles.yearTag}>{getBatchYear(r.email)}</span>
+                  )}
                   <button className={styles.removeBtn} onClick={() => handleRemove(r.email)} title="Remove">✕</button>
                 </div>
               ))}

@@ -17,7 +17,7 @@ export default function AddEventModal({ dayDate, onClose, onAdd }) {
     mode: "offline",
     description: "",
   });
-  const [dt, setDt] = useState({ startDate: defaultDate ? `2025-04-${String(defaultDate).padStart(2,"0")}` : "", startTime: "", endDate: "", endTime: "" });
+  const [dt, setDt] = useState({ startDate: defaultDate ? `2026-04-${String(defaultDate).padStart(2,"0")}` : "", startTime: "", endDate: "", endTime: "" });
   const [error, setError] = useState("");
 
   function set(field, value) {

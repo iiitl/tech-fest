@@ -8,6 +8,7 @@
   overflow-x: auto;
   scrollbar-width: thin;
   scrollbar-color: #2a2d3a transparent;
+  margin-top: 120px;
 }
 .gridWrapper::-webkit-scrollbar { height: 6px; }
 .gridWrapper::-webkit-scrollbar-track { background: transparent; }

@@ -1,16 +1,16 @@
-// Maps "Apr 6" style dates to 2025 Date objects
+// Maps "Apr 6" style dates to 2026 Date objects
 const MONTH_MAP = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
 
 export function labelToIso(label) {
-  // "Apr 6" -> "2025-04-06"
+  // "Apr 6" -> "2026-04-06"
   const [mon, day] = label.split(" ");
   const m = MONTH_MAP[mon];
   if (m === undefined) return null;
-  return `2025-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return `2026-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 export function isoToLabel(iso) {
-  // "2025-04-06" -> "Apr 6"
+  // "2026-04-06" -> "Apr 6"
   if (!iso) return "";
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
@@ -41,6 +41,44 @@ export function calcDuration(startTime, endTime) {
   if (mins < 60) return `${mins} min`;
   const hrs = mins / 60;
   return `${Number.isInteger(hrs) ? hrs : hrs.toFixed(1)} hrs`;
+}
+
+// Parses a start time in minutes from midnight from legacy time strings like "6:00 PM – 8:30 PM"
+function parseStartMinutes(timeStr) {
+  if (!timeStr) return null;
+  // Match "H:MM AM/PM" or "HH:MM AM/PM" at the start
+  const m = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!m) return null;
+  let h = parseInt(m[1], 10);
+  const min = parseInt(m[2], 10);
+  const period = m[3].toUpperCase();
+  if (period === "PM" && h !== 12) h += 12;
+  if (period === "AM" && h === 12) h = 0;
+  return h * 60 + min;
+}
+
+// Returns minutes from midnight for an event (uses startTime field or parses legacy time string)
+function eventStartMinutes(event) {
+  if (event.startTime) {
+    const [h, m] = event.startTime.split(":").map(Number);
+    return h * 60 + m;
+  }
+  return parseStartMinutes(event.time);
+}
+
+// Sort: online first, then by start time ascending, no-time events last
+export function sortEvents(events) {
+  return [...events].sort((a, b) => {
+    const aOnline = a.mode === "online" ? 0 : 1;
+    const bOnline = b.mode === "online" ? 0 : 1;
+    if (aOnline !== bOnline) return aOnline - bOnline;
+    const aMin = eventStartMinutes(a);
+    const bMin = eventStartMinutes(b);
+    if (aMin === null && bMin === null) return 0;
+    if (aMin === null) return 1;
+    if (bMin === null) return -1;
+    return aMin - bMin;
+  });
 }
 
 function fmt12(time24) {

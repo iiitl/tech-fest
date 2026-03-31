@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { week1, week2, CAT_COLOR } from "@/lib/data";
+import { sortEvents } from "@/lib/eventTime";
 import { getEvents, saveEvent, deleteEvent } from "@/app/actions/events";
 import EventCard from "./EventCard";
 import EventModal from "./EventModal";
@@ -94,12 +95,22 @@ export default function BoardView({ activeFilter, activeCats }) {
   else if (activeFilter === "offline") events = events.filter(e => e.mode === "offline");
   if (activeCats.size > 0) events = events.filter(e => activeCats.has(e.cat));
 
+  // Group by day
+  const dayGroups = {};
+  events.forEach(ev => {
+    if (!dayGroups[ev._day]) dayGroups[ev._day] = [];
+    dayGroups[ev._day].push(ev);
+  });
+  // Sort within each day: online first, then by time, no-time last
+  Object.keys(dayGroups).forEach(day => { dayGroups[day] = sortEvents(dayGroups[day]); });
+
   // Group by category
   const groups = {};
   events.forEach(ev => {
     if (!groups[ev.cat]) groups[ev.cat] = [];
     groups[ev.cat].push(ev);
   });
+  Object.keys(groups).forEach(cat => { groups[cat] = sortEvents(groups[cat]); });
 
   return (
     <>

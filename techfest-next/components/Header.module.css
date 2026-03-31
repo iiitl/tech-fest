@@ -135,8 +135,11 @@
   .userName { display: none; }
   .roleBadge { display: none; }
   .viewBtn { padding: 5px 10px; font-size: 12px; }
+  .timelineToggle { display: none; }
+  .viewToggle .viewBtn[data-view="Timeline"] { display: none; }
   .userChip { gap: 5px; }
   .avatar, .avatarPlaceholder { width: 24px; height: 24px; }
+  .timelineToggle { display: none; }
 }
 
 .manageRolesBtn {

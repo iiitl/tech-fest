@@ -5,6 +5,7 @@ import EventCard from "./EventCard";
 import EventModal from "./EventModal";
 import AddEventModal from "./AddEventModal";
 import { week1, week2, DATE_TO_IDX } from "@/lib/data";
+import { sortEvents } from "@/lib/eventTime";
 import { getEvents, saveEvent, createEvent, deleteEvent } from "@/app/actions/events";
 import styles from "./WeekGrid.module.css";
 
@@ -118,7 +119,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
       if (!movedEvent) return;
 
       const targetDay = weeksRef.current[toWIdx][toDIdx];
-      const targetDateISO = `2025-04-${String(targetDay.date.replace('Apr ', '')).padStart(2, '0')}`;
+      const targetDateISO = `2026-04-${String(targetDay.date.replace('Apr ', '')).padStart(2, '0')}`;
       const newEndDate = movedEvent.endDate && targetDateISO > movedEvent.endDate ? targetDateISO : movedEvent.endDate;
       const updatedEvent = { ...movedEvent, startDate: targetDateISO, endDate: newEndDate };
 
@@ -210,7 +211,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
     if (activeFilter === "online") r = r.filter(e => e.mode === "online");
     else if (activeFilter === "offline") r = r.filter(e => e.mode === "offline");
     if (activeCats.size > 0) r = r.filter(e => activeCats.has(e.cat));
-    return r;
+    return sortEvents(r);
   }
 
   return (

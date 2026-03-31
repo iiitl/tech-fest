@@ -3,6 +3,7 @@ export const CAT_CLASS = {
   "GDG Web": "cat-gdgweb", Web: "cat-web", CP: "cat-cp",
   InfoSec: "cat-infosec", Design: "cat-design", ML: "cat-ml",
   "GDG FoSS": "cat-gdgfoss", GDG: "cat-gdg", "GDG ML Wing": "cat-gdgml",
+  "GDG Blockchain Wing": "cat-gdgblockchain",
 };
 
 export const CAT_COLOR = {
@@ -10,6 +11,7 @@ export const CAT_COLOR = {
   "GDG Web": "#e85830", Web: "#c44a2f", CP: "#d4772c",
   InfoSec: "#b83a5e", Design: "#8b5cf6", ML: "#2196F3",
   "GDG FoSS": "#0d9488", GDG: "#e85830", "GDG ML Wing": "#2196F3",
+  "GDG Blockchain Wing": "#7c3aed",
 };
 
 export const CATEGORIES = Object.keys(CAT_COLOR);
@@ -110,19 +112,19 @@ export const week2 = [
 
 // Maps ISO date -> { weekIdx, dayIdx } for the calendar grid
 export const DATE_TO_IDX = {
-  "2025-04-06": { weekIdx: 0, dayIdx: 0 },
-  "2025-04-07": { weekIdx: 0, dayIdx: 1 },
-  "2025-04-08": { weekIdx: 0, dayIdx: 2 },
-  "2025-04-09": { weekIdx: 0, dayIdx: 3 },
-  "2025-04-10": { weekIdx: 0, dayIdx: 4 },
-  "2025-04-11": { weekIdx: 0, dayIdx: 5 },
-  "2025-04-12": { weekIdx: 0, dayIdx: 6 },
-  "2025-04-13": { weekIdx: 1, dayIdx: 0 },
-  "2025-04-14": { weekIdx: 1, dayIdx: 1 },
-  "2025-04-15": { weekIdx: 1, dayIdx: 2 },
-  "2025-04-16": { weekIdx: 1, dayIdx: 3 },
-  "2025-04-17": { weekIdx: 1, dayIdx: 4 },
-  "2025-04-18": { weekIdx: 1, dayIdx: 5 },
+  "2026-04-06": { weekIdx: 0, dayIdx: 0 },
+  "2026-04-07": { weekIdx: 0, dayIdx: 1 },
+  "2026-04-08": { weekIdx: 0, dayIdx: 2 },
+  "2026-04-09": { weekIdx: 0, dayIdx: 3 },
+  "2026-04-10": { weekIdx: 0, dayIdx: 4 },
+  "2026-04-11": { weekIdx: 0, dayIdx: 5 },
+  "2026-04-12": { weekIdx: 0, dayIdx: 6 },
+  "2026-04-13": { weekIdx: 1, dayIdx: 0 },
+  "2026-04-14": { weekIdx: 1, dayIdx: 1 },
+  "2026-04-15": { weekIdx: 1, dayIdx: 2 },
+  "2026-04-16": { weekIdx: 1, dayIdx: 3 },
+  "2026-04-17": { weekIdx: 1, dayIdx: 4 },
+  "2026-04-18": { weekIdx: 1, dayIdx: 5 },
 };
 
 export const timelineBars = [
