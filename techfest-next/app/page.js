@@ -11,7 +11,7 @@ export default function Home() {
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeCats, setActiveCats] = useState(new Set());
   const [activeView, setActiveView] = useState("Split");
-  const [showTimeline, setShowTimeline] = useState(true);
+  const [showTimeline, setShowTimeline] = useState(false);
 
   function toggleCat(cat) {
     setActiveCats(prev => {
