@@ -1,38 +1,28 @@
 "use client";
-import { useEffect, useState } from "react";
-import { getEvents } from "@/app/actions/events";
 import { CAT_COLOR } from "@/lib/data";
 import styles from "./Timeline.module.css";
 
 const DATES = ["Apr 6","Apr 7","Apr 8","Apr 9","Apr 10","Apr 11","Apr 12","Apr 13","Apr 14","Apr 15","Apr 16","Apr 17","Apr 18"];
-const TOTAL = 13; // days
+const TOTAL = 13;
 
 function dateToIdx(iso) {
   if (!iso) return null;
   const day = parseInt(iso.split("-")[2], 10);
-  return day - 6; // Apr 6 = 0, Apr 18 = 12
+  return day - 6;
 }
 
-export default function Timeline() {
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    getEvents().then(evs => {
-      // Only events with a startDate
-      const filtered = evs
-        .filter(e => e.startDate)
-        .map(e => ({
-          name: e.name,
-          color: CAT_COLOR[e.cat] || "#888",
-          mode: e.mode,
-          start: dateToIdx(e.startDate),
-          end: dateToIdx(e.endDate || e.startDate),
-        }))
-        .filter(e => e.start !== null && e.start >= 0 && e.start <= 12)
-        .sort((a, b) => a.start - b.start);
-      setEvents(filtered);
-    }).catch(() => {});
-  }, []);
+export default function Timeline({ events = [] }) {
+  const bars = events
+    .filter(e => e.startDate)
+    .map(e => ({
+      name: e.name,
+      color: CAT_COLOR[e.cat] || "#888",
+      mode: e.mode,
+      start: dateToIdx(e.startDate),
+      end: dateToIdx(e.endDate || e.startDate),
+    }))
+    .filter(e => e.start !== null && e.start >= 0 && e.start <= 12)
+    .sort((a, b) => a.start - b.start);
 
   return (
     <div className={styles.section}>
@@ -48,7 +38,7 @@ export default function Timeline() {
 
       {/* Bars */}
       <div className={styles.bars}>
-        {events.map((ev, i) => {
+        {bars.map((ev, i) => {
           const startPct = (ev.start / TOTAL) * 100;
           const spanPct  = ((ev.end - ev.start + 1) / TOTAL) * 100;
           return (

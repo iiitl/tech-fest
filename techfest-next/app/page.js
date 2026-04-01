@@ -1,16 +1,22 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Timeline from "@/components/Timeline";
 import WeekGrid from "@/components/WeekGrid";
 import BoardView from "@/components/BoardView";
+import { getEvents } from "@/app/actions/events";
 
 export default function Home() {
   const { loading } = useAuth();
   const [activeFilter, setActiveFilter] = useState("all");
   const [activeCats, setActiveCats] = useState(new Set());
   const [activeView, setActiveView] = useState("Split");
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    getEvents().then(setEvents).catch(() => {});
+  }, []);
 
   function toggleCat(cat) {
     setActiveCats(prev => {
@@ -41,7 +47,7 @@ export default function Home() {
           <WeekGrid activeFilter={activeFilter} activeCats={activeCats} />
         </>
       )}
-      {activeView === "Timeline" && <Timeline />}
+      {activeView === "Timeline" && <Timeline events={events} />}
       {activeView === "Board" && (
         <BoardView activeFilter={activeFilter} activeCats={activeCats} />
       )}
