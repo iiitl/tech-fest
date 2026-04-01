@@ -44,6 +44,7 @@ export default function BoardView({ activeFilter, activeCats }) {
               ...day,
               events: dbEvents
                 .filter(e => e.weekIdx === wIdx && e.dayIdx === dIdx)
+                .sort((a, b) => a.mode === b.mode ? 0 : a.mode === 'online' ? -1 : 1)
                 .map(e => ({ id: e.eventId, name: e.name, time: e.time, cat: e.cat, mode: e.mode, description: e.description || "Join us and participate! No detailed description provided yet.", comments: e.comments || [], poc: e.poc, driveLink: e.driveLink || "", rulebook: e.rulebook || "" })),
             }))
           )
