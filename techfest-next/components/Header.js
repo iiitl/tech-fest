@@ -5,7 +5,7 @@ import { CATEGORIES, CAT_COLOR } from "@/lib/data";
 import RoleManager from "./RoleManager";
 import styles from "./Header.module.css";
 
-export default function Header({ onFilterChange, onCatToggle, activeCats, activeView, onViewChange }) {
+export default function Header({ onFilterChange, onCatToggle, activeCats, activeView, onViewChange, showTimeline, onTimelineToggle }) {
   const { user, role, login, logout, error, loading } = useAuth();
   const [activeFilter, setActiveFilter] = useState("all");
   const [showCats, setShowCats] = useState(false);
@@ -29,7 +29,7 @@ export default function Header({ onFilterChange, onCatToggle, activeCats, active
           <div className={styles.right}>
             <div className={styles.viewToggle}>
               {["Split", "Timeline", "Board"].map(v => (
-                <button key={v} className={`${styles.viewBtn} ${activeView === v ? styles.active : ""}`} onClick={() => onViewChange(v)}>{v}</button>
+                <button key={v} data-view={v} className={`${styles.viewBtn} ${activeView === v ? styles.active : ""}`} onClick={() => onViewChange(v)}>{v}</button>
               ))}
             </div>
             {user ? (
@@ -69,6 +69,15 @@ export default function Header({ onFilterChange, onCatToggle, activeCats, active
               {f.charAt(0).toUpperCase() + f.slice(1)}
             </button>
           ))}
+          <div className={styles.divider} />
+          {/* {activeView === "Split" && (
+            <button
+              className={`${styles.filterBtn} ${showTimeline ? styles.active : ""} ${styles.timelineToggle}`}
+              onClick={onTimelineToggle}
+            >
+              Timeline
+            </button>
+          )} */}
           <div className={styles.divider} />
           <button
             className={`${styles.filterBtn} ${showCats ? styles.active : ""}`}

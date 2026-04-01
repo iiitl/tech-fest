@@ -170,6 +170,16 @@
 }
 .removeBtn:hover { color: #f87171; }
 
+.yearTag {
+  font-size: 0.68rem; font-weight: 700;
+  background: rgba(255,255,255,0.07);
+  color: #9ca3af;
+  padding: 2px 7px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
 @media (max-width: 600px) {
   .overlay { align-items: flex-end; }
   .panel {
