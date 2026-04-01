@@ -12,7 +12,7 @@ const events = [
   {
     eventId:"0-0-1", weekIdx:0, dayIdx:0, name:"Contract Battle", time:"Apr 6 · 48 hrs", cat:"Blockchain", mode:"online",
     startDate:"2025-04-06", endDate:"2025-04-08", startTime:null, endTime:null,
-    description:"Join us and participate! No detailed description provided yet.", comments:[],
+    description:"Join us and participate! No detailed description provided yet.", rulebook:"", comments:[],
   },
   {
     eventId:"0-0-2", weekIdx:0, dayIdx:0, name:"Appophilia", time:"Apr 6 · 7 days", cat:"App", mode:"online",
@@ -23,7 +23,7 @@ const events = [
   {
     eventId:"0-0-3", weekIdx:0, dayIdx:0, name:"GDG UserRush", time:"Apr 6 · 7 days", cat:"GDG Web", mode:"online",
     startDate:"2025-04-06", endDate:"2025-04-13", startTime:null, endTime:null,
-    description:"Join us and participate! No detailed description provided yet.", comments:[],
+    description:"Join us and participate! No detailed description provided yet.", rulebook:"", comments:[],
   },
   {
     eventId:"0-0-4", weekIdx:0, dayIdx:0, name:"Dev Stakes", time:"Apr 6 · 84 hrs", cat:"Web", mode:"online",
@@ -111,7 +111,7 @@ const events = [
   {
     eventId:"1-0-1", weekIdx:1, dayIdx:0, name:"GDG Fossology", time:"Apr 13 · 36 hrs online", cat:"GDG FoSS", mode:"online",
     startDate:"2025-04-13", endDate:"2025-04-15", startTime:null, endTime:null,
-    description:"Join us and participate! No detailed description provided yet.", comments:[],
+    description:"Join us and participate! No detailed description provided yet.", rulebook:"", comments:[],
   },
   {
     eventId:"1-0-2", weekIdx:1, dayIdx:0, name:"Code Arena", time:"6:00 PM – 9:00 PM · 3 hrs", cat:"CP", mode:"offline",
@@ -135,7 +135,7 @@ const events = [
   {
     eventId:"1-1-1", weekIdx:1, dayIdx:1, name:"GDG DevSphere", time:"9:30 PM – 12:30 AM · 3 hrs", cat:"GDG", mode:"offline",
     startDate:"2025-04-14", endDate:"2025-04-15", startTime:"21:30", endTime:"00:30",
-    description:"Join us and participate! No detailed description provided yet.", comments:[],
+    description:"Join us and participate! No detailed description provided yet.", rulebook:"", comments:[],
   },
   // Week 2 - Wed Apr 15
   {
@@ -173,13 +173,13 @@ const events = [
   {
     eventId:"1-4-1", weekIdx:1, dayIdx:4, name:"GDG Fossology – Round 2", time:"10:00 PM – 12:00 AM", cat:"GDG FoSS", mode:"offline",
     startDate:"2025-04-17", endDate:"2025-04-18", startTime:"22:00", endTime:"00:00",
-    description:"Join us and participate! No detailed description provided yet.", comments:[],
+    description:"Join us and participate! No detailed description provided yet.", rulebook:"", comments:[],
   },
   // Week 2 - Sat Apr 18
   {
     eventId:"1-5-0", weekIdx:1, dayIdx:5, name:"Code Surgery", time:"11:00 AM – 2:00 PM · 3 hrs", cat:"Web", mode:"offline",
     startDate:"2025-04-18", endDate:"2025-04-18", startTime:"11:00", endTime:"14:00",
-    description:"Join us and participate! No detailed description provided yet.", comments:[],
+    description:"Join us and participate! No detailed description provided yet.", rulebook:"", comments:[],
   },
   {
     eventId:"1-5-1", weekIdx:1, dayIdx:5, name:"BlindForces", time:"4:00 PM – 6:00 PM · 2 hrs", cat:"CP", mode:"offline",
@@ -190,18 +190,18 @@ const events = [
   {
     eventId:"1-5-2", weekIdx:1, dayIdx:5, name:"Hackofiesta", time:"Starts 9:00 PM · 36 hrs · Team of 4", cat:"Blockchain", mode:"offline",
     startDate:"2025-04-18", endDate:"2025-04-20", startTime:"21:00", endTime:null,
-    description:"Join us and participate! No detailed description provided yet.", comments:[],
+    description:"Join us and participate! No detailed description provided yet.", rulebook:"", comments:[],
   },
   // Custom events
   {
     eventId:"custom-1774636590925", weekIdx:0, dayIdx:1, name:"RAGathon", time:"Apr 7 . 72 hours", cat:"FOSS", mode:"online",
     startDate:null, endDate:null, startTime:null, endTime:null,
-    description:"No description provided.", comments:[],
+    description:"No description provided.", rulebook:"", comments:[],
   },
   {
     eventId:"custom-1774718721744", weekIdx:0, dayIdx:1, name:"GDG Ragathon", time:"120 hrs", cat:"GDG ML Wing", mode:"online",
     startDate:null, endDate:null, startTime:null, endTime:null,
-    description:"No description provided.", comments:[],
+    description:"No description provided.", rulebook:"", comments:[],
   },
   {
     eventId:"custom-1774864247033", weekIdx:1, dayIdx:3, name:"Code Surgery", time:"6:00 PM - 9:00 PM - 3 Hour", cat:"Web", mode:"offline",
@@ -212,7 +212,7 @@ const events = [
   {
     eventId:"custom-1774872135370", weekIdx:0, dayIdx:1, name:"Hackathon", time:"04/07 · 10:00 AM – 12:00 PM · 2 hrs", cat:"FOSS", mode:"offline",
     startDate:null, endDate:null, startTime:null, endTime:null,
-    description:"No description provided.", comments:[],
+    description:"No description provided.", rulebook:"", comments:[],
   },
 ];
 

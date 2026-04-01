@@ -24,6 +24,7 @@
   animation: slideUp 0.3s ease-out;
   display: flex;
   flex-direction: column;
+  transition: max-width 0.2s;
 }
 .header {
   padding: 20px;
@@ -344,7 +345,145 @@
   .inputGroup .submitBtn { width: 100%; }
 }
 
-@keyframes sheetUp {
-  from { transform: translateY(100%); opacity: 1; }
-  to   { transform: translateY(0);    opacity: 1; }
+.mdEditorOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: #0a0c12;
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.mdEditorHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #0e1018;
+  border-bottom: 1px solid #1e2130;
+  flex-shrink: 0;
+}
+
+.mdEditorTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.mdEditorActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mdToolbar {
+  display: flex;
+  gap: 2px;
+  padding: 7px 12px;
+  background: #0e1018;
+  border-bottom: 1px solid #1e2130;
+  flex-wrap: wrap;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.mdToolBtn {
+  background: #161922;
+  border: 1px solid #2a2d3a;
+  color: #9ca3af;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.4;
+  font-family: inherit;
+}
+.mdToolBtn:hover {
+  background: #2a2d3a;
+  color: #e8e4de;
+  border-color: #555;
+}
+.mdToolSep {
+  width: 1px;
+  height: 18px;
+  background: #2a2d3a;
+  margin: 0 4px;
+}
+
+.mdPanes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  flex: 1;
+  overflow: hidden;
+}
+
+.mdPane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mdPaneLabel {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 5px 14px;
+  background: #0e1018;
+  border-bottom: 1px solid #1e2130;
+  flex-shrink: 0;
+}
+
+.mdTextarea {
+  flex: 1;
+  width: 100%;
+  background: #0a0c12;
+  border: none;
+  border-right: 1px solid #1e2130;
+  color: #d1d5db;
+  padding: 16px;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  resize: none;
+  box-sizing: border-box;
+}
+.mdTextarea:focus { outline: none; }
+
+.mdPreviewPane {
+  flex: 1;
+  padding: 16px 20px;
+  color: #d1d5db;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  overflow-y: auto;
+  background: #0a0c12;
+}
+.mdPreviewPane h1 { color: #f9fafb; font-size: 1.3rem; margin: 12px 0 6px; border-bottom: 1px solid #1e2130; padding-bottom: 4px; }
+.mdPreviewPane h2 { color: #f3f4f6; font-size: 1.1rem; margin: 10px 0 5px; }
+.mdPreviewPane h3 { color: #e5e7eb; font-size: 0.95rem; margin: 8px 0 4px; }
+.mdPreviewPane strong { color: #f9fafb; }
+.mdPreviewPane em { color: #d1d5db; font-style: italic; }
+.mdPreviewPane ul, .mdPreviewPane ol { padding-left: 20px; margin: 6px 0; }
+.mdPreviewPane li { margin: 3px 0; }
+.mdPreviewPane code { background: #1e2130; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; color: #f97316; font-family: monospace; }
+.mdPreviewPane pre { background: #161922; padding: 14px; border-radius: 8px; overflow-x: auto; margin: 8px 0; border: 1px solid #2a2d3a; }
+.mdPreviewPane pre code { background: none; padding: 0; color: #86efac; font-size: 0.82rem; }
+.mdPreviewPane blockquote { border-left: 3px solid #f97316; padding: 4px 12px; color: #9ca3af; margin: 8px 0; background: #0e1018; border-radius: 0 6px 6px 0; }
+.mdPreviewPane a { color: #60a5fa; text-decoration: underline; }
+.mdPreviewPane hr { border: none; border-top: 1px solid #2a2d3a; margin: 12px 0; }
+.mdPreviewPane p { margin: 5px 0; }
+.mdPreviewPane table { border-collapse: collapse; width: 100%; margin: 8px 0; }
+.mdPreviewPane th, .mdPreviewPane td { border: 1px solid #2a2d3a; padding: 6px 10px; font-size: 0.85rem; }
+.mdPreviewPane th { background: #161922; color: #e5e7eb; }
+
+@media (max-width: 640px) {
+  .mdPanes { grid-template-columns: 1fr; }
+  .mdTextarea { border-right: none; border-bottom: 1px solid #1e2130; min-height: 40vh; }
+  .mdPreviewPane { min-height: 30vh; }
 }

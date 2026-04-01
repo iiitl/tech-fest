@@ -52,7 +52,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
               ...day,
               events: eventsFromDb
                 .filter(e => e.weekIdx === wIdx && e.dayIdx === dIdx)
-                .map(e => ({ id: e.eventId, name: e.name, time: e.time, cat: e.cat, mode: e.mode, description: e.description || "Join us and participate! No detailed description provided yet.", comments: e.comments || [], poc: e.poc, startDate: e.startDate, startTime: e.startTime, endDate: e.endDate, endTime: e.endTime })),
+                .map(e => ({ id: e.eventId, name: e.name, time: e.time, cat: e.cat, mode: e.mode, description: e.description || "Join us and participate! No detailed description provided yet.", comments: e.comments || [], poc: e.poc, startDate: e.startDate, startTime: e.startTime, endDate: e.endDate, endTime: e.endTime, driveLink: e.driveLink || "", rulebook: e.rulebook || "" })),
             }))
           )
         );
@@ -190,6 +190,8 @@ export default function WeekGrid({ activeFilter, activeCats }) {
         startTime:   updatedEvent.startTime,
         endDate:     updatedEvent.endDate,
         endTime:     updatedEvent.endTime,
+        driveLink:   updatedEvent.driveLink,
+        rulebook:    updatedEvent.rulebook,
         ...(newPos && { weekIdx: newPos.weekIdx, dayIdx: newPos.dayIdx }),
       });
       console.log(`[DB] Saved event ${updatedEvent.id}`);

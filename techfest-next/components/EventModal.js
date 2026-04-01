@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
+import ReactMarkdown from "react-markdown";
 import styles from "./EventModal.module.css";
 import { CAT_COLOR, CATEGORIES } from "@/lib/data";
 import DateTimePicker, { formatDisplay } from "./DateTimePicker";
@@ -15,9 +16,24 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
   const canReply    = isAdmin || isOrganizer || isPoc;
   const isLoggedIn  = !!user;
 
-  // Description
+  // Description (plain)
   const [isEditingDesc, setIsEditingDesc] = useState(false);
   const [descText, setDescText] = useState(event.description || "");
+
+  // Rulebook (markdown)
+  const [isEditingRulebook, setIsEditingRulebook] = useState(false);
+  const [rulebookText, setRulebookText] = useState(event.rulebook || "");
+  const textareaRef = useRef(null);
+
+  function insertMd(before, after = "") {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart, end = ta.selectionEnd;
+    const selected = rulebookText.slice(start, end);
+    const newText = rulebookText.slice(0, start) + before + selected + after + rulebookText.slice(end);
+    setRulebookText(newText);
+    setTimeout(() => { ta.focus(); ta.setSelectionRange(start + before.length, start + before.length + selected.length); }, 0);
+  }
 
   // Event details
   const [isEditingDetails, setIsEditingDetails] = useState(false);
@@ -26,6 +42,7 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
     cat:  event.cat  || CATEGORIES[0],
     mode: event.mode || "offline",
     poc:  event.poc  || "",
+    driveLink: event.driveLink || "",
   });
   const [dt, setDt] = useState({
     startDate: event.startDate || "",
@@ -46,6 +63,11 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
   function handleSaveDesc() {
     onSave({ ...event, description: descText });
     setIsEditingDesc(false);
+  }
+
+  function handleSaveRulebook() {
+    onSave({ ...event, rulebook: rulebookText });
+    setIsEditingRulebook(false);
   }
 
   const [toast, setToast] = useState("");
@@ -97,7 +119,58 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose}>
+    <>
+      {/* Fullscreen markdown editor — rendered outside modal */}
+      {isEditingRulebook && (
+        <div className={styles.mdEditorOverlay}>
+          <div className={styles.mdEditorHeader}>
+            <span className={styles.mdEditorTitle}>📋 Editing Rulebook — {event.name}</span>
+            <div className={styles.mdEditorActions}>
+              <button className={styles.cancelBtn} onClick={() => { setRulebookText(event.rulebook || ""); setIsEditingRulebook(false); }}>Cancel</button>
+              <button className={styles.submitBtn} onClick={handleSaveRulebook}>Save</button>
+            </div>
+          </div>
+          <div className={styles.mdToolbar}>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("**","**")}><b>B</b></button>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("*","*")}><i>I</i></button>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("~~","~~")}>S̶</button>
+            <div className={styles.mdToolSep}/>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("## ","")}>H2</button>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("### ","")}>H3</button>
+            <div className={styles.mdToolSep}/>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("- ","")}>• List</button>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("1. ","")}>1. List</button>
+            <div className={styles.mdToolSep}/>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("`","`")}>code</button>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("```\n","\n```")}>block</button>
+            <div className={styles.mdToolSep}/>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("> ","")}>quote</button>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("---\n","")}>─ hr</button>
+            <button className={styles.mdToolBtn} type="button" onClick={() => insertMd("**🏆 "," 🏆**")}>★ highlight</button>
+          </div>
+          <div className={styles.mdPanes}>
+            <div className={styles.mdPane}>
+              <div className={styles.mdPaneLabel}>Markdown</div>
+              <textarea
+                ref={textareaRef}
+                className={styles.mdTextarea}
+                value={rulebookText}
+                onChange={e => setRulebookText(e.target.value)}
+                placeholder={`Write rulebook in markdown...\n\n## Rules\n- Rule 1\n- Rule 2\n\n## Judging Criteria\n- Criteria 1\n\n**Bold**, *italic*, \`inline code\`\n\n> Note`}
+                autoFocus
+              />
+            </div>
+            <div className={styles.mdPane}>
+              <div className={styles.mdPaneLabel}>Live Preview</div>
+              <div className={styles.mdPreviewPane}>
+                <ReactMarkdown>{rulebookText || "*Start typing to see preview...*"}</ReactMarkdown>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={e => e.stopPropagation()}>
         {toast && (
           <div style={{ position:"sticky", top:0, zIndex:10, background:"#c0392b", color:"#fff", padding:"8px 16px", borderRadius:"6px", margin:"0 0 8px", fontSize:"0.85rem", textAlign:"center" }}>
@@ -184,6 +257,17 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
                       />
                     </label>
                   )}
+                  {isAdmin && (
+                    <label className={styles.fieldLabel}>
+                      Rulebook Link (Google Drive)
+                      <input
+                        className={styles.fieldInput}
+                        placeholder="https://drive.google.com/..."
+                        value={details.driveLink}
+                        onChange={e => setDetail("driveLink", e.target.value)}
+                      />
+                    </label>
+                  )}
                   <div className={styles.fieldActions}>
                     <button className={styles.cancelBtn} onClick={() => setIsEditingDetails(false)}>Cancel</button>
                     <button className={styles.submitBtn} onClick={handleSaveDetails}>Save</button>
@@ -224,12 +308,38 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
                   onChange={e => setDescText(e.target.value)}
                   placeholder="Enter event description..."
                 />
-                <button className={styles.submitBtn} onClick={handleSaveDesc} style={{ alignSelf: "flex-start" }}>
-                  Save
-                </button>
+                <div style={{ display:"flex", gap:"8px", justifyContent:"flex-end" }}>
+                  <button className={styles.cancelBtn} onClick={() => { setDescText(event.description || ""); setIsEditingDesc(false); }}>Cancel</button>
+                  <button className={styles.submitBtn} onClick={handleSaveDesc}>Save</button>
+                </div>
               </div>
             ) : (
-              <div className={styles.descText} style={{ whiteSpace: "pre-wrap" }}>{event.description || "No description provided."}</div>
+              <div className={styles.descText} style={{ whiteSpace:"pre-wrap" }}>{event.description || "No description provided."}</div>
+            )}
+          </div>
+
+          <hr style={{ borderColor: "#222", margin: "10px 0" }} />
+
+          {/* ── Rulebook ── */}
+          <div className={styles.section}>
+            <div className={styles.sectionTitle}>
+              Rulebook
+              {canEdit && !isEditingRulebook && (
+                <button className={styles.editBtn} onClick={() => setIsEditingRulebook(true)}>Edit</button>
+              )}
+            </div>
+            {event.rulebook ? (
+              <div className={styles.mdPreviewPane} style={{ padding:0 }}>
+                <ReactMarkdown>{event.rulebook}</ReactMarkdown>
+              </div>
+            ) : (
+              <div className={styles.descText}>No rulebook added yet.</div>
+            )}
+            {event.driveLink && (
+              <a href={event.driveLink} target="_blank" rel="noopener noreferrer"
+                style={{ display:"inline-flex", alignItems:"center", gap:"6px", color:"#4a9eff", textDecoration:"none", fontWeight:500, fontSize:"0.85rem", marginTop:"8px" }}>
+                📄 Open Full Rulebook (Drive) ↗
+              </a>
             )}
           </div>
 
@@ -318,5 +428,6 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

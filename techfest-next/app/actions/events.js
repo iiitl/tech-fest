@@ -39,6 +39,8 @@ export async function saveEvent(eventId, eventData) {
           ...(eventData.endTime     !== undefined && { endTime:     eventData.endTime }),
           ...(eventData.weekIdx     !== undefined && { weekIdx:     eventData.weekIdx }),
           ...(eventData.dayIdx      !== undefined && { dayIdx:      eventData.dayIdx }),
+          ...(eventData.driveLink   !== undefined && { driveLink:   eventData.driveLink }),
+          ...(eventData.rulebook     !== undefined && { rulebook:    eventData.rulebook }),
         }
       },
       { upsert: true }
