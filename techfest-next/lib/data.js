@@ -108,6 +108,17 @@ export const week2 = [
   },
 ];
 
+export const week3 = [
+  { day: "Sun", date: "Apr 19", badge: "", events: [] },
+  { day: "Mon", date: "Apr 20", badge: "", events: [] },
+  { day: "Tue", date: "Apr 21", badge: "", events: [] },
+  { day: "Wed", date: "Apr 22", badge: "", events: [] },
+  { day: "Thu", date: "Apr 23", badge: "", events: [] },
+  { day: "Fri", date: "Apr 24", badge: "", events: [] },
+  { day: "Sat", date: "Apr 25", badge: "", events: [] },
+  { day: "Sun", date: "Apr 26", badge: "CLOSING", events: [] },
+];
+
 // Maps ISO date -> { weekIdx, dayIdx } for the calendar grid
 export const DATE_TO_IDX = {
   "2025-04-06": { weekIdx: 0, dayIdx: 0 },
@@ -123,6 +134,14 @@ export const DATE_TO_IDX = {
   "2025-04-16": { weekIdx: 1, dayIdx: 3 },
   "2025-04-17": { weekIdx: 1, dayIdx: 4 },
   "2025-04-18": { weekIdx: 1, dayIdx: 5 },
+  "2025-04-19": { weekIdx: 2, dayIdx: 0 },
+  "2025-04-20": { weekIdx: 2, dayIdx: 1 },
+  "2025-04-21": { weekIdx: 2, dayIdx: 2 },
+  "2025-04-22": { weekIdx: 2, dayIdx: 3 },
+  "2025-04-23": { weekIdx: 2, dayIdx: 4 },
+  "2025-04-24": { weekIdx: 2, dayIdx: 5 },
+  "2025-04-25": { weekIdx: 2, dayIdx: 6 },
+  "2025-04-26": { weekIdx: 2, dayIdx: 7 },
 };
 
 export const timelineBars = [

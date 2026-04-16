@@ -16,7 +16,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(13, minmax(140px, 1fr));
+  grid-template-columns: repeat(21, minmax(140px, 1fr));
   width: max-content;
   min-width: 100%;
 }

@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import EventCard from "./EventCard";
 import EventModal from "./EventModal";
 import AddEventModal from "./AddEventModal";
-import { week1, week2, DATE_TO_IDX } from "@/lib/data";
+import { week1, week2, week3, DATE_TO_IDX } from "@/lib/data";
 import { getEvents, saveEvent, createEvent, deleteEvent } from "@/app/actions/events";
 import styles from "./WeekGrid.module.css";
 
@@ -15,7 +15,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
   const [activeDay, setActiveDay] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const [weeksData, setWeeksData] = useState(() =>
-    [week1, week2].map((week, wIdx) =>
+    [week1, week2, week3].map((week, wIdx) =>
       week.map((day, dIdx) => ({
         day: day.day, date: day.date, badge: day.badge,
         events: day.events.map((ev, eIdx) => ({
@@ -38,8 +38,8 @@ export default function WeekGrid({ activeFilter, activeCats }) {
   const dragOverRef = useRef(null);
   weeksRef.current = weeksData;
 
-  // flat list of all days across both weeks
-  const allDays = [...weeksData[0], ...weeksData[1]];
+  // flat list of all days across all three weeks
+  const allDays = [...weeksData[0], ...weeksData[1], ...(weeksData[2] || [])];
 
   useEffect(() => {
     async function load() {
@@ -231,8 +231,8 @@ export default function WeekGrid({ activeFilter, activeCats }) {
       <div className={styles.gridWrapper}>
         <div className={styles.grid} style={dragging ? { userSelect: "none", cursor: "grabbing" } : {}}>
           {allDays.map((dayData, flatIdx) => {
-            const wIdx = flatIdx < 7 ? 0 : 1;
-            const dIdx = flatIdx < 7 ? flatIdx : flatIdx - 7;
+            const wIdx = flatIdx < 7 ? 0 : flatIdx < 13 ? 1 : 2;
+            const dIdx = flatIdx < 7 ? flatIdx : flatIdx < 13 ? flatIdx - 7 : flatIdx - 13;
             const isOver = dragging && dragOver === `${wIdx}-${dIdx}`;
             const filtered = filterEvents(dayData.events);
             return (
