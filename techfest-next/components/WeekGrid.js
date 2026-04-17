@@ -8,7 +8,7 @@ import { week1, week2, week3, DATE_TO_IDX } from "@/lib/data";
 import { getEvents, saveEvent, createEvent, deleteEvent } from "@/app/actions/events";
 import styles from "./WeekGrid.module.css";
 
-export default function WeekGrid({ activeFilter, activeCats }) {
+export default function WeekGrid({ activeFilter, activeCats, onRefresh }) {
   const { role } = useAuth();
   const isAuthorized = role === "admin" || role === "organizer";
 
@@ -61,7 +61,13 @@ export default function WeekGrid({ activeFilter, activeCats }) {
       } catch (err) { console.error(err); setLoaded(true); }
     }
     load();
-  }, []);
+
+    // Auto-select today
+    const today = new Date();
+    const dateStr = today.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const todayIdx = allDays.findIndex(d => d.date === dateStr);
+    if (todayIdx !== -1) setActiveDay(todayIdx);
+  }, [allDays.length]);
 
   // drag/touch handlers
   function onCardPointerDown(e, eventId, wIdx, dIdx) {
@@ -119,7 +125,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
       if (!movedEvent) return;
 
       const targetDay = weeksRef.current[toWIdx][toDIdx];
-      const targetDateISO = `2025-04-${String(targetDay.date.replace('Apr ', '')).padStart(2, '0')}`;
+      const targetDateISO = `2026-04-${String(targetDay.date.replace('Apr ', '')).padStart(2, '0')}`;
       const newEndDate = movedEvent.endDate && targetDateISO > movedEvent.endDate ? targetDateISO : movedEvent.endDate;
       const updatedEvent = { ...movedEvent, startDate: targetDateISO, endDate: newEndDate };
 
@@ -150,7 +156,10 @@ export default function WeekGrid({ activeFilter, activeCats }) {
       weekIdx:   toWIdx,
       dayIdx:    toDIdx,
     }).then(r => {
-      if (r?.success) console.log(`[DB] Saved ${eventId} -> week${toWIdx} day${toDIdx}`);
+      if (r?.success) {
+        console.log(`[DB] Saved ${eventId} -> week${toWIdx} day${toDIdx}`);
+        onRefresh?.();
+      }
       else console.error(`[DB] Failed to save ${eventId}:`, r?.error);
     }).catch(err => console.error(`[DB] Error saving ${eventId}:`, err));
   }, [pendingSave]);
@@ -158,7 +167,10 @@ export default function WeekGrid({ activeFilter, activeCats }) {
   async function handleDeleteEvent(eventId) {
     setWeeksData(prev => prev.map(week => week.map(day => ({ ...day, events: day.events.filter(e => e.id !== eventId) }))));
     setSelectedEvent(null);
-    try { await deleteEvent(eventId); } catch (err) { console.error(err); }
+    try {
+      await deleteEvent(eventId);
+      onRefresh?.();
+    } catch (err) { console.error(err); }
   }
 
   async function handleSaveEvent(updatedEvent) {
@@ -196,6 +208,7 @@ export default function WeekGrid({ activeFilter, activeCats }) {
         ...(newPos && { weekIdx: newPos.weekIdx, dayIdx: newPos.dayIdx }),
       });
       console.log(`[DB] Saved event ${updatedEvent.id}`);
+      onRefresh?.();
     } catch (err) { console.error(`[DB] Failed to save event ${updatedEvent.id}:`, err); }
   }
 
@@ -204,7 +217,10 @@ export default function WeekGrid({ activeFilter, activeCats }) {
     const newEvent = { ...form, id: `custom-${Date.now()}`, description: form.description || "No description provided.", comments: [] };
     setWeeksData(prev => prev.map((week, wi) => week.map((day, di) => wi === weekIdx && di === dayIdx ? { ...day, events: [...day.events, newEvent] } : day)));
     setAddTarget(null);
-    try { await createEvent(newEvent.id, { name: newEvent.name, time: newEvent.time, cat: newEvent.cat, mode: newEvent.mode, description: newEvent.description, comments: [], weekIdx, dayIdx }); }
+    try {
+      await createEvent(newEvent.id, { name: newEvent.name, time: newEvent.time, cat: newEvent.cat, mode: newEvent.mode, description: newEvent.description, comments: [], weekIdx, dayIdx });
+      onRefresh?.();
+    }
     catch (err) { console.error(err); }
   }
 

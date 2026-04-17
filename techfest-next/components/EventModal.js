@@ -22,6 +22,7 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
 
   // Rulebook (markdown)
   const [isEditingRulebook, setIsEditingRulebook] = useState(false);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false);
   const [rulebookText, setRulebookText] = useState(event.rulebook || "");
   const textareaRef = useRef(null);
 
@@ -190,14 +191,27 @@ export default function EventModal({ event, onClose, onSave, onDelete }) {
             </div>
           </div>
           <div className={styles.headerRight}>
-            {canEdit && onDelete && (
-              <button className={styles.deleteBtn} onClick={() => { if (confirm(`Delete "${event.name}"?`)) onDelete(event.id); }}>🗑</button>
+            {canEdit && onDelete && !isConfirmingDelete && (
+              <button className={styles.deleteBtn} onClick={() => setIsConfirmingDelete(true)} title="Delete Event">🗑</button>
             )}
             <button className={styles.closeBtn} onClick={onClose}>✕</button>
           </div>
         </div>
 
         <div className={styles.body}>
+          {/* ── Custom Delete Confirmation ── */}
+          {isConfirmingDelete && (
+            <div className={styles.deleteConfirmOverlay}>
+              <div className={styles.deleteConfirmCard}>
+                <h3>Delete Event?</h3>
+                <p>Are you sure you want to delete <strong>{event.name}</strong>? This action cannot be undone.</p>
+                <div className={styles.confirmActions}>
+                  <button className={styles.cancelBtn} onClick={() => setIsConfirmingDelete(false)}>No, keep it</button>
+                  <button className={styles.confirmDeleteBtn} onClick={() => onDelete(event.id)}>Yes, Delete</button>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* ── Event Details Edit ── */}
           {canEdit && (

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { week1, week2, CAT_COLOR } from "@/lib/data";
+import { week1, week2, week3, CAT_COLOR } from "@/lib/data";
 import { getEvents, saveEvent, deleteEvent } from "@/app/actions/events";
 import EventCard from "./EventCard";
 import EventModal from "./EventModal";
@@ -18,9 +18,9 @@ function buildAllEvents(weeksData) {
   return all;
 }
 
-export default function BoardView({ activeFilter, activeCats }) {
+export default function BoardView({ activeFilter, activeCats, onRefresh }) {
   const [weeksData, setWeeksData] = useState(() =>
-    [week1, week2].map((week, wIdx) =>
+    [week1, week2, week3].map((week, wIdx) =>
       week.map((day, dIdx) => ({
         day: day.day, date: day.date, badge: day.badge,
         events: day.events.map((ev, eIdx) => ({
@@ -67,13 +67,20 @@ export default function BoardView({ activeFilter, activeCats }) {
     try {
       await saveEvent(updatedEvent.id, {
         description: updatedEvent.description,
-        comments: updatedEvent.comments,
-        name: updatedEvent.name,
-        time: updatedEvent.time,
-        cat:  updatedEvent.cat,
-        mode: updatedEvent.mode,
-        poc:  updatedEvent.poc,
+        comments:    updatedEvent.comments,
+        name:        updatedEvent.name,
+        time:        updatedEvent.time,
+        cat:         updatedEvent.cat,
+        mode:        updatedEvent.mode,
+        poc:         updatedEvent.poc,
+        startDate:   updatedEvent.startDate,
+        startTime:   updatedEvent.startTime,
+        endDate:     updatedEvent.endDate,
+        endTime:     updatedEvent.endTime,
+        driveLink:   updatedEvent.driveLink,
+        rulebook:    updatedEvent.rulebook,
       });
+      onRefresh?.();
     } catch (e) {
       console.error(e);
     }
@@ -86,7 +93,10 @@ export default function BoardView({ activeFilter, activeCats }) {
       )
     );
     setSelectedEvent(null);
-    try { await deleteEvent(eventId); } catch (e) { console.error(e); }
+    try {
+      await deleteEvent(eventId);
+      onRefresh?.();
+    } catch (e) { console.error(e); }
   }
 
   let events = buildAllEvents(weeksData);

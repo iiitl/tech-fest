@@ -25,9 +25,9 @@ export function formatDisplay(startDate, startTime, endDate, endTime) {
   if (endTime) {
     str += ` – ${fmt12(endTime)}`;
     // calc duration
-    const s = new Date(`2025-${startDate.slice(5)}T${startTime || "00:00"}`);
+    const s = new Date(`2026-${startDate.slice(5)}T${startTime || "00:00"}`);
     const eDate = endDate || startDate;
-    const e = new Date(`2025-${eDate.slice(5)}T${endTime}`);
+    const e = new Date(`2026-${eDate.slice(5)}T${endTime}`);
     let mins = Math.round((e - s) / 60000);
     if (mins <= 0) mins += 24 * 60;
     if (mins > 0) {
@@ -56,8 +56,8 @@ export default function DateTimePicker({ value, onChange }) {
           <input
             type="date"
             className={styles.input}
-            min="2025-04-06"
-            max="2025-04-18"
+            min="2026-04-06"
+            max="2026-04-26"
             value={startDate || ""}
             onChange={e => set("startDate", e.target.value)}
           />
@@ -67,8 +67,8 @@ export default function DateTimePicker({ value, onChange }) {
           <input
             type="date"
             className={styles.input}
-            min={startDate || "2025-04-06"}
-            max="2025-04-18"
+            min={startDate || "2026-04-06"}
+            max="2026-04-26"
             value={endDate || ""}
             onChange={e => set("endDate", e.target.value)}
           />

@@ -14,8 +14,12 @@ export default function Home() {
   const [activeView, setActiveView] = useState("Split");
   const [events, setEvents] = useState([]);
 
-  useEffect(() => {
+  const refreshEvents = () => {
     getEvents().then(setEvents).catch(() => {});
+  };
+
+  useEffect(() => {
+    refreshEvents();
   }, []);
 
   function toggleCat(cat) {
@@ -44,12 +48,12 @@ export default function Home() {
       />
       {activeView === "Split" && (
         <>
-          <WeekGrid activeFilter={activeFilter} activeCats={activeCats} />
+          <WeekGrid activeFilter={activeFilter} activeCats={activeCats} onRefresh={refreshEvents} />
         </>
       )}
       {activeView === "Timeline" && <Timeline events={events} />}
       {activeView === "Board" && (
-        <BoardView activeFilter={activeFilter} activeCats={activeCats} />
+        <BoardView activeFilter={activeFilter} activeCats={activeCats} onRefresh={refreshEvents} />
       )}
     </>
   );

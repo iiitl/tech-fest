@@ -1,16 +1,16 @@
-// Maps "Apr 6" style dates to 2025 Date objects
+// Maps "Apr 6" style dates to 2026 Date objects
 const MONTH_MAP = { Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11 };
 
 export function labelToIso(label) {
-  // "Apr 6" -> "2025-04-06"
+  // "Apr 6" -> "2026-04-06"
   const [mon, day] = label.split(" ");
   const m = MONTH_MAP[mon];
   if (m === undefined) return null;
-  return `2025-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return `2026-${String(m + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 export function isoToLabel(iso) {
-  // "2025-04-06" -> "Apr 6"
+  // "2026-04-06" -> "Apr 6"
   if (!iso) return "";
   const d = new Date(iso + "T00:00:00");
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
